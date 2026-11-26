@@ -114,6 +114,10 @@ jobs:
   seguranca:
     name: Verificações de segurança
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # O Gitleaks consulta a lista de commits do Pull Request para saber o que analisar.
+      pull-requests: read
     steps:
       - name: Obter o código com todo o histórico
         uses: actions/checkout@v4

@@ -1,0 +1,9 @@
+# XAMPP: com o projeto em htdocs/cofrelo-app, o endereço http://localhost/cofrelo-app/ abre o site.
+# Tudo é redirecionado para a pasta public; o código (src, .env, database) nunca fica acessível pelo navegador.
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^$ public/ [L]
+    RewriteRule ^((?!public/).*)$ public/$1 [L,NC]
+</IfModule>

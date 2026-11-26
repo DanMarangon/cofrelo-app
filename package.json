@@ -1,0 +1,12 @@
+{
+  "name": "cofrelo-frontend",
+  "private": true,
+  "type": "module",
+  "description": "Testes das funções JavaScript do Cofrelo, sem dependências externas",
+  "scripts": {
+    "test": "node --test \"tests/js/**/*.test.mjs\""
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

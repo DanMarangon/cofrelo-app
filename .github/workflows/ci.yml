@@ -1,0 +1,140 @@
+name: CI
+
+# Roda a cada push em qualquer branch e em todo Pull Request para develop ou main.
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [develop, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Um push novo na mesma branch cancela a execução anterior, que ficou desatualizada.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validacao:
+    name: Validação e testes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_SENHA_TESTES }}
+          MYSQL_DATABASE: cofrelo_teste
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
+          --health-interval=5s
+          --health-timeout=3s
+          --health-retries=30
+    steps:
+      - name: Obter o código
+        uses: actions/checkout@v4
+
+      - name: Preparar o PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: pdo_mysql, mbstring
+          coverage: none
+          tools: composer:v2
+
+      - name: Validar o composer.json
+        run: composer validate --strict
+
+      - name: Localizar o cache do Composer
+        id: cache-composer
+        run: echo "pasta=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Reaproveitar downloads do Composer
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.cache-composer.outputs.pasta }}
+          key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+
+      - name: Instalar as dependências
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Verificar a sintaxe de todos os arquivos PHP
+        run: |
+          erros=0
+          while IFS= read -r -d '' arquivo; do
+            php -l "$arquivo" > /tmp/lint.txt 2>&1 || { cat /tmp/lint.txt; erros=1; }
+          done < <(find . -path ./vendor -prune -o -name '*.php' -print0)
+          exit $erros
+
+      - name: Preparar o Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Testes do JavaScript
+        run: |
+          mkdir -p build
+          node --test --test-reporter=spec --test-reporter-destination=stdout \
+               --test-reporter=junit --test-reporter-destination=build/javascript-junit.xml \
+               "tests/js/**/*.test.mjs"
+
+      - name: Testes do PHP (PHPUnit, unitários e de integração com MySQL)
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: "3306"
+          DB_NAME: cofrelo_teste
+          DB_USER: root
+          DB_PASS: ${{ secrets.MYSQL_SENHA_TESTES }}
+          EXIGIR_BANCO: "1"
+        run: vendor/bin/phpunit --testdox --log-junit build/phpunit-junit.xml
+
+      - name: Publicar o resultado dos testes
+        if: always()
+        uses: mikepenz/action-junit-report@v5
+        with:
+          report_paths: build/*-junit.xml
+          check_name: Resultado dos testes
+          detailed_summary: true
+          include_passed: true
+
+      - name: Guardar os relatórios de teste
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorios-de-teste
+          path: build/
+          retention-days: 14
+
+  seguranca:
+    name: Verificações de segurança
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # O Gitleaks consulta a lista de commits do Pull Request para saber o que analisar.
+      pull-requests: read
+    steps:
+      - name: Obter o código com todo o histórico
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Preparar o PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          coverage: none
+          tools: composer:v2
+
+      - name: Dependências com vulnerabilidades conhecidas (composer audit)
+        run: composer audit --locked
+
+      - name: Senhas e chaves esquecidas no código (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

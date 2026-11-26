@@ -1,0 +1,27 @@
+# Dependências e saídas geradas
+/vendor/
+/node_modules/
+/build/
+/.phpunit.cache/
+.phpunit.result.cache
+
+# Configuração local e segredos (use o .env.example como modelo)
+.env
+.env.*
+!.env.example
+
+# Estado local do script de implantação
+/.deploy/
+
+# Logs e arquivos temporários
+/storage/logs/*
+!/storage/logs/.gitkeep
+/docs/.cache/
+*.log
+
+# Sistema operacional e editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/

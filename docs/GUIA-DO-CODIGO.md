@@ -16,6 +16,8 @@ Este guia é para quem vai abrir o projeto pela primeira vez. Ele mostra onde fi
 | `.github/workflows/` | O pipeline: `ci.yml` (a cada push) e `release.yml` (a cada versão) |
 | `docs/` | Documentos de entrega, evidências e as ferramentas que os geram |
 
+As pastas `src/`, `public/assets/js/`, `views/` e `tests/` têm um `LEIA-ME.md` com o papel de cada subpasta.
+
 ## 2. Caminho 1: abrir uma página (por exemplo, `/transacoes`)
 
 1. **Apache** recebe o pedido. Como `/transacoes` não é um arquivo de verdade, ele entrega o pedido para `public/index.php` (regra `FallbackResource` em `docker/apache/cofrelo.conf`).

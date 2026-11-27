@@ -1,18 +1,18 @@
 PS> .\scripts\implantar.ps1 -Versao 1.0.0
-# executado em 27/11/2026 06:08:47
+# executado em 27/11/2026 07:56:49
 
-[06:08:47] Versão em execução: nenhuma. Versão pedida: 1.0.0.
-[06:08:47] Baixando ghcr.io/danmarangon/cofrelo-app:1.0.0 do GitHub Container Registry...
-[06:08:47] Sem acesso ao registro. Baixando a imagem anexada à release v1.0.0 (GitHub CLI)...
-[06:09:10] Imagem conferida: sha256:461b23e8062ca9d2130409780eb0a152c40dd34cd53deaf9422b51f991991eca
-[06:09:10] Trocando o container pela versão 1.0.0 (estratégia recreate)...
-[06:09:10]    Container cofrelo-banco-1 Running 
-[06:09:10]    Container cofrelo-app-1 Recreate 
-[06:09:11]    Container cofrelo-app-1 Recreated 
-[06:09:11]    Container cofrelo-banco-1 Waiting 
-[06:09:12]    Container cofrelo-banco-1 Healthy 
-[06:09:12]    Container cofrelo-app-1 Starting 
-[06:09:14]    Container cofrelo-app-1 Started 
-[06:09:16] Implantação concluída: versão 1.0.0, commit 85233456ba4f, banco ok.
+[07:56:49] Versão em execução: nenhuma. Versão pedida: 1.0.0.
+[07:56:49] Baixando ghcr.io/danmarangon/cofrelo-app:1.0.0 do GitHub Container Registry...
+[07:56:50] Sem acesso ao registro. Baixando a imagem anexada à release v1.0.0 (GitHub CLI)...
+[07:57:18] Imagem conferida: sha256:1bf3e93c3c05071774abec5b8c16b08ff5db90ea6443e18feb1c3a047f2eaf89
+[07:57:18] Trocando o container pela versão 1.0.0 (estratégia recreate)...
+[07:57:18]    Container cofrelo-banco-1 Running 
+[07:57:18]    Container cofrelo-app-1 Creating 
+[07:57:18]    Container cofrelo-app-1 Created 
+[07:57:18]    Container cofrelo-banco-1 Waiting 
+[07:57:19]    Container cofrelo-banco-1 Healthy 
+[07:57:19]    Container cofrelo-app-1 Starting 
+[07:57:19]    Container cofrelo-app-1 Started 
+[07:57:21] Implantação concluída: versão 1.0.0, commit 26e1c6eb1230, banco ok.
 
 # código de saída: 0

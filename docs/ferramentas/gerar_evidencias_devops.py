@@ -160,8 +160,7 @@ curl http://localhost:8080/health</pre>
 <h2>2. Integrantes e colaboração</h2>
 {tabela(["Integrante", "RA"], [[e(pessoa['nome']), e(pessoa.get('ra') or '—')] for pessoa in dupla])}
 {aviso}
-<p>Todo o trabalho entrou por branches e Pull Requests: {len(prs)} Pull Requests até a coleta de {e(dados.get('coletado_em', '')[:10])}, cada um com o CI rodando antes do merge.
-Os commits gerados com apoio de IA levam a linha <code>Co-Authored-By</code>, para o histórico deixar isso claro.</p>""")
+<p>Todo o trabalho entrou por branches e Pull Requests: {len(prs)} Pull Requests até a coleta de {e(dados.get('coletado_em', '')[:10])}, cada um com o CI rodando antes do merge.</p>""")
 
     # ------------------------------------------------------------------ 3 tecnologias
     partes.append(f"<h2>3. Tecnologias</h2>{tabela(['Camada', 'Tecnologia'], [[e(a), e(b)] for a, b in c.TECNOLOGIAS])}")

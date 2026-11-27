@@ -90,7 +90,7 @@ final class CalculadoraMeta
         if ($ritmoCentavos <= 0) {
             return null;
         }
-        // Divisão inteira: quantos meses completos de depósito cabem no que falta.
-        return intdiv($faltaCentavos, $ritmoCentavos);
+        // Arredonda para cima: se sobrar qualquer centavo, ele só entra no mês seguinte.
+        return intdiv($faltaCentavos + $ritmoCentavos - 1, $ritmoCentavos);
     }
 }

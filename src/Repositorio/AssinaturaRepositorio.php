@@ -6,6 +6,10 @@ namespace Cofrelo\Repositorio;
 
 use Cofrelo\Modelo\Assinatura;
 
+/**
+ * Consultas SQL das assinaturas (cobranças mensais). Repositório = a única camada que fala com o banco;
+ * os controladores e serviços pedem os dados a ele, sem escrever SQL.
+ */
 final class AssinaturaRepositorio extends Repositorio
 {
     private const SELECAO = 'SELECT a.*, c.nome AS conta_nome, cat.nome AS categoria_nome

@@ -47,74 +47,97 @@ function posicionarDica(dica, container, evento) {
  */
 export function graficoBarras(container, { rotulos, series, destaque = -1, altura = 250 }) {
   const largura = Math.max(container.clientWidth || 640, 320);
-  const margem = { topo: 10, direita: 6, base: 30, esquerda: 66 };
-  const areaLargura = largura - margem.esquerda - margem.direita;
-  const areaAltura = altura - margem.topo - margem.base;
-
-  const maior = Math.max(0, ...series.flatMap((serie) => serie.valores));
-  const passo = passoDoEixo(maior);
-  const topo = passo * Math.max(4, Math.ceil(maior / passo));
-  const escalaY = (valor) => margem.topo + areaAltura - (valor / topo) * areaAltura;
-
+  const area = areaDoGrafico(largura, altura);
+  const escala = escalaVertical(series, area);
   const grafico = svg('svg', { viewBox: `0 0 ${largura} ${altura}`, role: 'presentation' });
-
-  // [DW 10.a] Laço de repetição: uma linha de grade para cada marca do eixo.
-  for (let marca = 0; marca <= topo; marca += passo) {
-    const y = escalaY(marca);
-    grafico.append(svg('line', { class: 'grade-linha', x1: margem.esquerda, x2: largura - margem.direita, y1: y, y2: y }));
-    grafico.append(svg('text', { class: 'eixo-texto', x: margem.esquerda - 10, y: y + 4, 'text-anchor': 'end' }, [formatarMoedaCurta(marca)]));
-  }
-
-  const grupo = areaLargura / rotulos.length;
-  const larguraBarra = Math.min(26, grupo * 0.26);
-  const espaco = Math.min(8, grupo * 0.08);
-  const larguraDoPar = larguraBarra * series.length + espaco * (series.length - 1);
   const dica = criarDica(container);
-  const barrasPorGrupo = [];
 
+  desenharGrade(grafico, escala, area, largura);
+  const larguraDoGrupo = area.largura / rotulos.length;
+  const todasAsBarras = [];
   rotulos.forEach((rotulo, indice) => {
-    const inicio = margem.esquerda + grupo * indice + (grupo - larguraDoPar) / 2;
-    const barras = series.map((serie, s) => {
-      const valor = serie.valores[indice] ?? 0;
-      const y = escalaY(valor);
-      const barra = svg('path', {
-        class: 'barra',
-        d: caminhoBarra(inicio + s * (larguraBarra + espaco), y, larguraBarra, margem.topo + areaAltura - y),
-        fill: serie.cor,
-      });
-      grafico.append(barra);
-      return barra;
-    });
-    barrasPorGrupo.push(barras);
-
+    const xDoGrupo = area.esquerda + larguraDoGrupo * indice;
+    const barras = desenharBarrasDoMes(grafico, series, indice, xDoGrupo, larguraDoGrupo, escala, area);
+    todasAsBarras.push(...barras);
     grafico.append(svg('text', {
       class: `eixo-texto${indice === destaque ? ' destaque' : ''}`,
-      x: margem.esquerda + grupo * indice + grupo / 2,
+      x: xDoGrupo + larguraDoGrupo / 2,
       y: altura - 8,
       'text-anchor': 'middle',
     }, [rotulo]));
-
-    // Área invisível maior que as barras para facilitar o mouse.
-    const alvo = svg('rect', { x: margem.esquerda + grupo * indice, y: margem.topo, width: grupo, height: areaAltura, fill: 'transparent' });
-    // [DW 10.g] Interação: ao passar o mouse, destaca o mês e mostra os valores.
-    alvo.addEventListener('mousemove', (evento) => {
-      container.classList.add('tem-foco');
-      barrasPorGrupo.flat().forEach((b) => b.classList.remove('em-foco'));
-      barras.forEach((b) => b.classList.add('em-foco'));
-      dica.replaceChildren(
-        el('strong', { texto: rotulo }),
-        ...series.map((serie) => el('div', {}, [el('span', { texto: serie.nome }), el('span', { texto: formatarMoeda(serie.valores[indice] ?? 0) })])),
-      );
-      posicionarDica(dica, container, evento);
-    });
-    alvo.addEventListener('mouseleave', () => {
-      container.classList.remove('tem-foco');
-      dica.hidden = true;
-    });
-    grafico.append(alvo);
+    grafico.append(alvoDoMouse({ container, dica, rotulo, series, indice, barras, todasAsBarras, x: xDoGrupo, largura: larguraDoGrupo, area }));
   });
 
   container.replaceChildren(grafico, dica);
+}
+
+/** Espaço do gráfico sem as margens (a da esquerda guarda os valores do eixo). */
+function areaDoGrafico(largura, altura) {
+  const margem = { topo: 10, direita: 6, base: 30, esquerda: 66 };
+  return {
+    topo: margem.topo,
+    esquerda: margem.esquerda,
+    direita: margem.direita,
+    largura: largura - margem.esquerda - margem.direita,
+    altura: altura - margem.topo - margem.base,
+  };
+}
+
+/** Converte um valor em reais na altura (y) do desenho; o eixo vai de 0 até um número "redondo". */
+function escalaVertical(series, area) {
+  const maior = Math.max(0, ...series.flatMap((serie) => serie.valores));
+  const passo = passoDoEixo(maior);
+  const topo = passo * Math.max(4, Math.ceil(maior / passo));
+  return { passo, topo, y: (valor) => area.topo + area.altura - (valor / topo) * area.altura };
+}
+
+function desenharGrade(grafico, escala, area, largura) {
+  // [DW 10.a] Laço de repetição: uma linha de grade para cada marca do eixo.
+  for (let marca = 0; marca <= escala.topo; marca += escala.passo) {
+    const y = escala.y(marca);
+    grafico.append(svg('line', { class: 'grade-linha', x1: area.esquerda, x2: largura - area.direita, y1: y, y2: y }));
+    grafico.append(svg('text', { class: 'eixo-texto', x: area.esquerda - 10, y: y + 4, 'text-anchor': 'end' }, [formatarMoedaCurta(marca)]));
+  }
+}
+
+/** Uma barra por série (receitas e despesas) lado a lado, centralizadas no espaço do mês. */
+function desenharBarrasDoMes(grafico, series, indice, xDoGrupo, larguraDoGrupo, escala, area) {
+  const larguraBarra = Math.min(26, larguraDoGrupo * 0.26);
+  const espaco = Math.min(8, larguraDoGrupo * 0.08);
+  const larguraDoPar = larguraBarra * series.length + espaco * (series.length - 1);
+  const inicio = xDoGrupo + (larguraDoGrupo - larguraDoPar) / 2;
+  const base = area.topo + area.altura;
+  return series.map((serie, s) => {
+    const y = escala.y(serie.valores[indice] ?? 0);
+    const barra = svg('path', {
+      class: 'barra',
+      d: caminhoBarra(inicio + s * (larguraBarra + espaco), y, larguraBarra, base - y),
+      fill: serie.cor,
+    });
+    grafico.append(barra);
+    return barra;
+  });
+}
+
+/** Área invisível do tamanho do mês inteiro: mais fácil de acertar com o mouse do que a barra fina. */
+function alvoDoMouse({ container, dica, rotulo, series, indice, barras, todasAsBarras, x, largura, area }) {
+  const alvo = svg('rect', { x, y: area.topo, width: largura, height: area.altura, fill: 'transparent' });
+  // [DW 10.g] Interação: ao passar o mouse, destaca o mês e mostra os valores.
+  alvo.addEventListener('mousemove', (evento) => {
+    container.classList.add('tem-foco');
+    todasAsBarras.forEach((b) => b.classList.remove('em-foco'));
+    barras.forEach((b) => b.classList.add('em-foco'));
+    dica.replaceChildren(
+      el('strong', { texto: rotulo }),
+      ...series.map((serie) => el('div', {}, [el('span', { texto: serie.nome }), el('span', { texto: formatarMoeda(serie.valores[indice] ?? 0) })])),
+    );
+    posicionarDica(dica, container, evento);
+  });
+  alvo.addEventListener('mouseleave', () => {
+    container.classList.remove('tem-foco');
+    dica.hidden = true;
+  });
+  return alvo;
 }
 
 /**
@@ -205,60 +228,65 @@ const NIVEIS = ['#EDF1EC', '#D6EBC4', '#A8D08F', '#5E9F6E', '#1D704F'];
  * @returns {string[]} cores da escala, para a legenda "Menos ... Mais"
  */
 export function mapaDeGastos(container, { dias, fim }) {
-  const colunas = semanasAte(fim, 53);
-  const tamanho = 12;
-  const espaco = 3;
-  const esquerda = 30;
-  const topo = 18;
-  const largura = esquerda + colunas.length * (tamanho + espaco);
-  const altura = topo + 7 * (tamanho + espaco);
+  const colunas = semanasAte(fim, 53); // uma coluna por semana, uma linha por dia da semana
+  const grade = { tamanho: 12, espaco: 3, esquerda: 30, topo: 18 };
+  const passo = grade.tamanho + grade.espaco;
+  const largura = grade.esquerda + colunas.length * passo;
+  const altura = grade.topo + 7 * passo;
+  const nivelDoDia = calcularNiveis(dias);
+  const grafico = svg('svg', { viewBox: `0 0 ${largura} ${altura}`, role: 'presentation' });
+  const dica = criarDica(container);
 
-  // Limites dos níveis pelos quartis dos dias com gasto, para a escala se adaptar a cada pessoa.
+  ['Seg', 'Qua', 'Sex'].forEach((nome, indice) => {
+    const linha = indice * 2 + 1;
+    grafico.append(svg('text', { class: 'eixo-texto', x: 0, y: grade.topo + linha * passo + 10 }, [nome]));
+  });
+
+  let mesAnterior = -1;
+  colunas.forEach((semana, coluna) => {
+    // O nome do mês aparece em cima da primeira semana dele.
+    const primeiroDia = semana[0];
+    if (primeiroDia.getMonth() !== mesAnterior && primeiroDia.getDate() <= 7) {
+      mesAnterior = primeiroDia.getMonth();
+      grafico.append(svg('text', { class: 'eixo-texto', x: grade.esquerda + coluna * passo, y: 11 }, [MESES_CURTOS[mesAnterior]]));
+    }
+    semana.forEach((dia, linha) => {
+      if (dia > fim) return; // dias depois de hoje ficam em branco
+      const valor = dias[paraISO(dia)] ?? 0;
+      const x = grade.esquerda + coluna * passo;
+      const y = grade.topo + linha * passo;
+      grafico.append(quadradoDoDia({ dia, valor, x, y, tamanho: grade.tamanho, cor: NIVEIS[nivelDoDia(valor)], dica, container }));
+    });
+  });
+
+  container.replaceChildren(grafico, dica);
+  return NIVEIS;
+}
+
+/**
+ * Tom de verde de cada dia (0 = sem gasto, 4 = gastou muito). Os limites vêm dos quartis dos dias com gasto,
+ * então a escala se adapta a quem gasta pouco e a quem gasta muito.
+ */
+function calcularNiveis(dias) {
   const valores = Object.values(dias).filter((valor) => valor > 0).sort((a, b) => a - b);
   const quartil = (p) => valores[Math.min(valores.length - 1, Math.floor(p * valores.length))] ?? 0;
   const limites = [quartil(0.25), quartil(0.5), quartil(0.75)];
-  const nivel = (valor) => {
+  return (valor) => {
     if (!valor) return 0;
     if (valor <= limites[0]) return 1;
     if (valor <= limites[1]) return 2;
     if (valor <= limites[2]) return 3;
     return 4;
   };
+}
 
-  const grafico = svg('svg', { viewBox: `0 0 ${largura} ${altura}`, role: 'presentation' });
-  ['Seg', 'Qua', 'Sex'].forEach((nome, indice) => {
-    const linha = indice * 2 + 1;
-    grafico.append(svg('text', { class: 'eixo-texto', x: 0, y: topo + linha * (tamanho + espaco) + 10 }, [nome]));
+function quadradoDoDia({ dia, valor, x, y, tamanho, cor, dica, container }) {
+  const quadrado = svg('rect', { class: 'dia', x, y, width: tamanho, height: tamanho, rx: 2.5, fill: cor });
+  quadrado.addEventListener('mousemove', (evento) => {
+    const data = `${dia.getDate()} ${MESES_CURTOS[dia.getMonth()]} ${dia.getFullYear()}`;
+    dica.replaceChildren(el('strong', { texto: valor > 0 ? formatarMoeda(valor) : 'Sem gastos' }), el('span', { texto: data }));
+    posicionarDica(dica, container, evento);
   });
-
-  const dica = criarDica(container);
-  let mesAnterior = -1;
-  colunas.forEach((semana, coluna) => {
-    const primeiroDia = semana[0];
-    if (primeiroDia.getMonth() !== mesAnterior && primeiroDia.getDate() <= 7) {
-      mesAnterior = primeiroDia.getMonth();
-      grafico.append(svg('text', { class: 'eixo-texto', x: esquerda + coluna * (tamanho + espaco), y: 11 }, [MESES_CURTOS[mesAnterior]]));
-    }
-    semana.forEach((dia, linha) => {
-      if (dia > fim) return;
-      const valor = dias[paraISO(dia)] ?? 0;
-      const quadrado = svg('rect', {
-        class: 'dia',
-        x: esquerda + coluna * (tamanho + espaco),
-        y: topo + linha * (tamanho + espaco),
-        width: tamanho, height: tamanho, rx: 2.5,
-        fill: NIVEIS[nivel(valor)],
-      });
-      quadrado.addEventListener('mousemove', (evento) => {
-        const data = `${dia.getDate()} ${MESES_CURTOS[dia.getMonth()]} ${dia.getFullYear()}`;
-        dica.replaceChildren(el('strong', { texto: valor > 0 ? formatarMoeda(valor) : 'Sem gastos' }), el('span', { texto: data }));
-        posicionarDica(dica, container, evento);
-      });
-      quadrado.addEventListener('mouseleave', () => { dica.hidden = true; });
-      grafico.append(quadrado);
-    });
-  });
-
-  container.replaceChildren(grafico, dica);
-  return NIVEIS;
+  quadrado.addEventListener('mouseleave', () => { dica.hidden = true; });
+  return quadrado;
 }

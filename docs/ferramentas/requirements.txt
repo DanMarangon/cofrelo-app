@@ -1,0 +1,5 @@
+# Dependências das ferramentas que geram as evidências e os documentos (não da aplicação).
+# Instalar: python -m pip install -r docs/ferramentas/requirements.txt
+python-docx==1.2.0
+python-pptx==1.0.2
+websocket-client==1.8.0

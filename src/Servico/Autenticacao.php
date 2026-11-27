@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Cofrelo\Servico;
 
+use Cofrelo\Http\ErroHttp;
 use Cofrelo\Modelo\Usuario;
 use Cofrelo\Repositorio\ContaRepositorio;
 use Cofrelo\Repositorio\UsuarioRepositorio;
+use Cofrelo\Suporte\LimiteDeTentativas;
 use Cofrelo\Suporte\Log;
 
 /** Cadastro e login, usados tanto pela API quanto pelos formulários das páginas. */
@@ -19,15 +21,29 @@ final class Autenticacao
     }
 
     /** Devolve o usuário se e-mail e senha conferem. A mensagem de erro é sempre a mesma, para não revelar e-mails cadastrados. */
-    public function entrar(string $email, string $senha): ?Usuario
+    /**
+     * Confere e-mail e senha. Depois de 5 erros seguidos do mesmo e-mail e IP (ou 20 do mesmo IP) em
+     * 15 minutos, o login fica bloqueado até a janela acabar, mesmo com a senha certa.
+     *
+     * @throws ErroHttp 429 enquanto o login estiver bloqueado
+     */
+    public function entrar(string $email, string $senha, string $ip = ''): ?Usuario
     {
+        $emailHash = substr(hash('sha256', mb_strtolower(trim($email))), 0, 12);
+        $espera = LimiteDeTentativas::segundosBloqueado($email, $ip);
+        if ($espera > 0) {
+            Log::aviso('autenticacao.bloqueada', ['email_hash' => $emailHash, 'segundos' => $espera]);
+            throw ErroHttp::muitasTentativas($espera);
+        }
         $usuario = $this->usuarios->buscarPorEmail($email);
         if ($usuario === null || !$usuario->senhaConfere($senha)) {
             // Pequena espera em toda tentativa errada deixa o ataque de força bruta mais lento.
             usleep(300_000);
-            Log::aviso('autenticacao.falha', ['email_hash' => substr(hash('sha256', mb_strtolower(trim($email))), 0, 12)]);
+            LimiteDeTentativas::registrarFalha($email, $ip);
+            Log::aviso('autenticacao.falha', ['email_hash' => $emailHash]);
             return null;
         }
+        LimiteDeTentativas::limpar($email, $ip);
         Log::info('autenticacao.entrada', ['usuario_id' => $usuario->id]);
         return $usuario;
     }

@@ -8,6 +8,7 @@ use Cofrelo\Aplicacao;
 use Cofrelo\Banco\DadosDeExemplo;
 use Cofrelo\Http\Requisicao;
 use Cofrelo\Http\Resposta;
+use Cofrelo\Suporte\LimiteDeTentativas;
 use Cofrelo\Suporte\Relogio;
 use Cofrelo\Suporte\Sessao;
 
@@ -21,11 +22,13 @@ final class ApiTest extends TesteComBanco
         parent::setUp();
         $this->app = new Aplicacao();
         Relogio::fixar('2026-11-26');
+        LimiteDeTentativas::zerar();
     }
 
     protected function tearDown(): void
     {
         Relogio::fixar(null);
+        LimiteDeTentativas::zerar();
     }
 
     /** @param array<string, mixed> $corpo */
@@ -48,7 +51,10 @@ final class ApiTest extends TesteComBanco
         self::assertSame(201, $resposta->status);
     }
 
-    /** @return array<string, mixed> */
+    /**
+     * @return array<string, mixed>
+     * @param array<string, mixed> $alteracoes
+     */
     private function novaDespesa(array $alteracoes = []): array
     {
         $contas = $this->chamar('GET', '/api/contas')->dados();
@@ -75,6 +81,22 @@ final class ApiTest extends TesteComBanco
 
         self::assertSame(401, $resposta->status);
         self::assertSame('Entre na sua conta para continuar.', $resposta->dados()['erro']);
+    }
+
+    public function testLoginFicaBloqueadoDepoisDeCincoSenhasErradas(): void
+    {
+        $this->entrarComoNovoUsuario();
+        $this->chamar('POST', '/api/auth/sair');
+        for ($i = 1; $i <= LimiteDeTentativas::MAXIMO_POR_CONTA; $i++) {
+            $errada = $this->chamar('POST', '/api/auth/entrar', ['email' => 'ana@exemplo.com', 'senha' => "errada{$i}"], false);
+            self::assertSame(401, $errada->status);
+        }
+
+        // Bloqueado: nem a senha certa entra até a janela de 15 minutos acabar.
+        $bloqueada = $this->chamar('POST', '/api/auth/entrar', ['email' => 'ana@exemplo.com', 'senha' => 'senha1234'], false);
+        self::assertSame(429, $bloqueada->status);
+        self::assertSame((string) LimiteDeTentativas::JANELA_SEGUNDOS, $bloqueada->cabecalho('Retry-After'));
+        self::assertStringContainsString('Espere 15 minutos', $bloqueada->dados()['erro']);
     }
 
     public function testCadastroCriaAContaPrincipalEExigeTokenCsrf(): void

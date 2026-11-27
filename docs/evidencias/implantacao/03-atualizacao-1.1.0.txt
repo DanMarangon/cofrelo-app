@@ -1,0 +1,15 @@
+PS> .\scripts\implantar.ps1 -Versao 1.1.0
+# 27/11/2026 06:20:40
+[06:20:40] Versão em execução: 1.0.0. Versão pedida: 1.1.0.
+[06:20:40] A imagem ghcr.io/danmarangon/cofrelo-app:1.1.0 já está neste computador.
+[06:20:40] Trocando o container pela versão 1.1.0 (estratégia recreate)...
+[06:20:40]    Container cofrelo-banco-1 Running 
+[06:20:40]    Container cofrelo-app-1 Recreate 
+[06:20:44]    Container cofrelo-app-1 Recreated 
+[06:20:44]    Container cofrelo-banco-1 Waiting 
+[06:20:44]    Container cofrelo-banco-1 Healthy 
+[06:20:44]    Container cofrelo-app-1 Starting 
+[06:20:44]    Container cofrelo-app-1 Started 
+[06:20:46] Implantação concluída: versão 1.1.0, commit f0f17e5c8da1, banco ok.
+# código de saída: 0
+

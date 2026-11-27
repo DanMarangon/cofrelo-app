@@ -4,6 +4,16 @@ Todas as mudanças importantes do Cofrelo ficam registradas aqui. O formato segu
 
 Cada versão tem uma tag `vX.Y.Z` na `main`, uma release no GitHub e a imagem `ghcr.io/danmarangon/cofrelo-app:X.Y.Z`.
 
+## [1.1.2] - 2026-11-27
+
+### Alterado
+
+- Código mais fácil de ler: funções longas divididas em passos com nomes claros e comentário no topo de todas as classes e módulos, sem mudar o comportamento.
+
+### Adicionado
+
+- `docs/GUIA-DO-CODIGO.md`, com o caminho de uma requisição e onde fica cada regra, e `docs/TECNOLOGIAS.md` (com PDF), com o que cada tecnologia soma ao projeto.
+
 ## [1.1.1] - 2026-11-27
 
 ### Adicionado
@@ -50,6 +60,7 @@ Primeira versão entregue.
 - Exportação em CSV protegida contra injeção de fórmula no Excel.
 - Pipeline com PHPStan, zizmor e hadolint; actions fixadas pelo SHA do commit, permissões mínimas e imagem base fixada pelo digest.
 
+[1.1.2]: https://github.com/DanMarangon/cofrelo-app/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/DanMarangon/cofrelo-app/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/DanMarangon/cofrelo-app/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/DanMarangon/cofrelo-app/releases/tag/v1.0.0

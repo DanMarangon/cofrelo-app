@@ -12,6 +12,7 @@
 
 # Estado local do script de implantação
 /.deploy/
+/.deploy-*/
 
 # Logs e arquivos temporários
 /storage/logs/*

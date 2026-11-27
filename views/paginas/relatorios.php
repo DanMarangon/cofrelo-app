@@ -60,7 +60,7 @@
         </div>
     </div>
     <div class="grade grade-principal">
-        <div class="tabela-area">
+        <div class="tabela-area" tabindex="0" role="region" aria-label="Tabela de gastos por categoria">
             <table class="tabela tabela-categorias">
                 <thead>
                     <tr>
@@ -89,7 +89,7 @@
             <p>Cada quadrado é um dia. Quanto mais escuro, mais você gastou naquele dia.</p>
         </div>
     </div>
-    <div class="mapa grafico" id="mapa-gastos" role="img" aria-label="Mapa de gastos diários do último ano"></div>
+    <div class="mapa grafico" id="mapa-gastos" role="img" aria-label="Mapa de gastos diários do último ano" tabindex="0"></div>
     <div class="mapa-rodape">
         <span id="mapa-resumo">&nbsp;</span>
         <span class="mapa-escala" id="mapa-escala">Menos</span>

@@ -100,7 +100,7 @@ $menuPreferencias = [
                 <span class="separador-vertical" aria-hidden="true"></span>
 
                 <div class="ancora">
-                    <button class="usuario-botao" id="botao-usuario" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="menu-usuario">
+                    <button class="usuario-botao" id="botao-usuario" type="button" aria-label="Olá, <?= e($usuario['primeiro_nome']) ?>: menu da conta" aria-haspopup="true" aria-expanded="false" aria-controls="menu-usuario">
                         <div>
                             <strong>Olá, <?= e($usuario['primeiro_nome']) ?></strong>
                             <span>Conta pessoal</span>

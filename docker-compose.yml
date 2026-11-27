@@ -1,0 +1,98 @@
+# Cofrelo: ambiente completo com Docker Compose.
+#
+#   docker compose up -d --build            sobe o banco e a aplicação em http://localhost:8080
+#   docker compose run --rm testes          roda os testes (PHPUnit) contra um banco de testes
+#   docker compose --profile observabilidade up -d   adiciona Prometheus e Grafana
+#
+# As senhas vêm do arquivo .env (copie o .env.example). Nenhuma senha fica neste arquivo.
+
+name: cofrelo
+
+services:
+  banco:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-cofrelo}
+      MYSQL_USER: ${DB_USER:-cofrelo}
+      MYSQL_PASSWORD: ${DB_PASS:?defina DB_PASS no arquivo .env}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS:?defina DB_ROOT_PASS no arquivo .env}
+      TZ: America/Sao_Paulo
+    volumes:
+      - dados-mysql:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 20s
+
+  app:
+    image: ${COFRELO_IMAGEM:-ghcr.io/danmarangon/cofrelo-app}:${COFRELO_VERSAO:-latest}
+    build:
+      context: .
+      target: producao
+      args:
+        APP_VERSION: ${COFRELO_VERSAO:-dev}
+    restart: unless-stopped
+    depends_on:
+      banco:
+        condition: service_healthy
+    environment:
+      DB_HOST: banco
+      DB_PORT: "3306"
+      DB_NAME: ${DB_NAME:-cofrelo}
+      DB_USER: ${DB_USER:-cofrelo}
+      DB_PASS: ${DB_PASS}
+      AUTO_MIGRATE: "true"
+      SEED_DEMO: ${SEED_DEMO:-true}
+      SIMULAR_FALHA: ${SIMULAR_FALHA:-false}
+    ports:
+      - "${APP_PORTA:-8080}:8080"
+
+  testes:
+    profiles: ["testes"]
+    build:
+      context: .
+      target: dev
+    depends_on:
+      banco:
+        condition: service_healthy
+    environment:
+      DB_HOST: banco
+      DB_NAME: cofrelo_teste
+      DB_USER: root
+      DB_PASS: ${DB_ROOT_PASS}
+      EXIGIR_BANCO: "1"
+    volumes:
+      - ./:/var/www/cofrelo
+    command: sh -c "composer install --no-interaction --no-progress --quiet && vendor/bin/phpunit"
+
+  prometheus:
+    profiles: ["observabilidade"]
+    image: prom/prometheus:v3.1.0
+    restart: unless-stopped
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+
+  grafana:
+    profiles: ["observabilidade"]
+    image: grafana/grafana:11.4.0
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_SENHA:?defina GRAFANA_SENHA no arquivo .env}
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    volumes:
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./docker/grafana/paineis:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
+volumes:
+  dados-mysql:

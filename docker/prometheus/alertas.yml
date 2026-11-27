@@ -1,0 +1,34 @@
+# Regras de alerta avaliadas pelo Prometheus. Elas aparecem em http://localhost:9090/alerts.
+groups:
+  - name: cofrelo
+    rules:
+      - alert: CofreloForaDoAr
+        expr: up{job="cofrelo"} == 0
+        for: 1m
+        labels:
+          severidade: critica
+        annotations:
+          resumo: "O Cofrelo não responde ao Prometheus há mais de 1 minuto."
+
+      - alert: BancoIndisponivel
+        expr: cofrelo_banco_disponivel == 0
+        for: 30s
+        labels:
+          severidade: critica
+        annotations:
+          resumo: "A aplicação está no ar, mas não consegue falar com o MySQL."
+
+      - alert: MuitosErrosInternos
+        expr: increase(cofrelo_erros_total[5m]) > 5
+        labels:
+          severidade: alta
+        annotations:
+          resumo: "Mais de 5 respostas com erro 5xx nos últimos 5 minutos."
+
+      - alert: RespostasLentas
+        expr: rate(cofrelo_requisicao_duracao_ms_sum[5m]) / rate(cofrelo_requisicao_duracao_ms_count[5m]) > 800
+        for: 5m
+        labels:
+          severidade: media
+        annotations:
+          resumo: "O tempo médio de resposta passou de 800 ms."

@@ -75,4 +75,22 @@ final class CalculadoraMeta
         }
         return round($faltaDepoisDoRendimento * $taxa / ($fator - 1), 2);
     }
+
+    /**
+     * Previsão (RN14): em quantos meses a meta fica pronta se a pessoa continuar guardando no ritmo atual.
+     * A conta é feita em centavos para não errar por arredondamento. Meta concluída devolve 0; sem ritmo, null.
+     */
+    public static function mesesParaConcluir(float $atual, float $objetivo, float $ritmoMensal): ?int
+    {
+        $faltaCentavos = (int) round(self::falta($atual, $objetivo) * 100);
+        if ($faltaCentavos === 0) {
+            return 0;
+        }
+        $ritmoCentavos = (int) round($ritmoMensal * 100);
+        if ($ritmoCentavos <= 0) {
+            return null;
+        }
+        // Arredonda para cima: se sobrar qualquer centavo, ele só entra no mês seguinte.
+        return intdiv($faltaCentavos + $ritmoCentavos - 1, $ritmoCentavos);
+    }
 }

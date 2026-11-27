@@ -43,6 +43,14 @@ function Registrar([string]$Texto) {
     Add-Content -Path $Historico -Value ('{0} {1}' -f (Get-Date -Format 's'), $Texto) -Encoding UTF8
 }
 
+# Roda um programa externo (docker, gh) sem que as mensagens dele no stderr interrompam o script:
+# com a saída capturada, o PowerShell 5.1 transforma esse stderr em erro. Quem decide é o $LASTEXITCODE.
+function Executar([scriptblock]$Comando) {
+    $anterior = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try { & $Comando 2>&1 | ForEach-Object { "$_" } } finally { $ErrorActionPreference = $anterior }
+}
+
 function Ler-Versao([string]$Arquivo) {
     if (Test-Path $Arquivo) { return (Get-Content $Arquivo -Raw).Trim() }
     return $null
@@ -58,24 +66,25 @@ function Consultar-Saude {
 
 function Garantir-Imagem([string]$VersaoDesejada) {
     $referencia = "${Imagem}:$VersaoDesejada"
-    if (docker images -q $referencia) {
+    if (Executar { docker images -q $referencia }) {
         Escrever "A imagem $referencia já está neste computador."
         return
     }
     Escrever "Baixando $referencia do GitHub Container Registry..."
-    docker pull $referencia | Out-Null
+    $null = Executar { docker pull $referencia }
     if ($LASTEXITCODE -eq 0) { return }
 
     Escrever "Sem acesso ao registro. Baixando a imagem anexada à release v$VersaoDesejada (GitHub CLI)..."
     $pasta = Join-Path $PastaEstado "release-$VersaoDesejada"
     New-Item -ItemType Directory -Force $pasta | Out-Null
-    gh release download "v$VersaoDesejada" --repo $Repositorio --pattern "cofrelo-imagem-$VersaoDesejada.tar.gz" --pattern "imagem-$VersaoDesejada.txt" --dir $pasta --clobber
+    $null = Executar { gh release download "v$VersaoDesejada" --repo $Repositorio --pattern "cofrelo-imagem-$VersaoDesejada.tar.gz" --pattern "imagem-$VersaoDesejada.txt" --dir $pasta --clobber }
     if ($LASTEXITCODE -ne 0) { throw "Não foi possível obter a imagem da versão $VersaoDesejada." }
-    docker load -i (Join-Path $pasta "cofrelo-imagem-$VersaoDesejada.tar.gz") | Out-Null
+    $null = Executar { docker load -i (Join-Path $pasta "cofrelo-imagem-$VersaoDesejada.tar.gz") }
+    if ($LASTEXITCODE -ne 0) { throw "O Docker não conseguiu carregar a imagem da versão $VersaoDesejada." }
 
     # Confere se a imagem carregada é a mesma que o pipeline publicou (rastreabilidade).
     $esperado = (Select-String -Path (Join-Path $pasta "imagem-$VersaoDesejada.txt") -Pattern '^id=(.+)$').Matches.Groups[1].Value
-    $carregado = docker image inspect --format '{{.Id}}' $referencia
+    $carregado = Executar { docker image inspect --format '{{.Id}}' $referencia }
     if ($esperado -and $esperado -ne $carregado) { throw "O ID da imagem carregada ($carregado) é diferente do publicado ($esperado)." }
     Escrever "Imagem conferida: $carregado"
 }
@@ -83,7 +92,7 @@ function Garantir-Imagem([string]$VersaoDesejada) {
 function Subir([string]$VersaoDesejada, [bool]$Falhar) {
     $env:COFRELO_VERSAO = $VersaoDesejada
     $env:SIMULAR_FALHA = if ($Falhar) { 'true' } else { 'false' }
-    docker compose up -d --no-build --force-recreate app
+    Executar { docker compose up -d --no-build --force-recreate app } | ForEach-Object { Escrever "  $_" }
     if ($LASTEXITCODE -ne 0) { throw "O Docker Compose não conseguiu subir a versão $VersaoDesejada." }
 }
 
@@ -130,7 +139,7 @@ if ($saude) {
 }
 
 Escrever "A versão $Versao não ficou saudável em $EsperaSegundos segundos. Últimas linhas do log:"
-docker compose logs app --tail 12
+Executar { docker compose logs app --tail 12 } | ForEach-Object { Write-Host "  $_" }
 
 if ($atual -and $atual -ne $Versao) {
     Escrever "ROLLBACK: voltando para a versão $atual..."

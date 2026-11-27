@@ -43,13 +43,17 @@ final class Meta
         return CalculadoraMeta::status($this->valorAtual, $this->valorObjetivo);
     }
 
-    /** @return array<string, mixed> */
-    public function paraArray(?DateTimeImmutable $hoje = null): array
+    /**
+     * @param float $ritmoMensal média guardada por mês nos últimos 3 meses (usada na previsão de conclusão)
+     * @return array<string, mixed>
+     */
+    public function paraArray(?DateTimeImmutable $hoje = null, float $ritmoMensal = 0.0): array
     {
         $hoje ??= new DateTimeImmutable('today');
         $limite = $this->dataLimite !== null ? new DateTimeImmutable($this->dataLimite) : null;
         $meses = CalculadoraMeta::mesesRestantes($hoje, $limite);
         $status = $this->status();
+        $previsao = CalculadoraMeta::mesesParaConcluir($this->valorAtual, $this->valorObjetivo, $ritmoMensal);
 
         return [
             'id' => $this->id,
@@ -71,6 +75,30 @@ final class Meta
             'aporte_mensal_sugerido' => $meses !== null && $status !== CalculadoraMeta::CONCLUIDA
                 ? CalculadoraMeta::aporteMensal($this->valorAtual, $this->valorObjetivo, $meses)
                 : null,
+            'ritmo_mensal' => round($ritmoMensal, 2),
+            'previsao_meses' => $previsao,
+            'previsao_rotulo' => $this->rotuloDaPrevisao($previsao, $ritmoMensal, $hoje, $limite),
         ];
+    }
+
+    /** Frase da previsão mostrada no cartão da meta (RN14). */
+    private function rotuloDaPrevisao(?int $meses, float $ritmo, DateTimeImmutable $hoje, ?DateTimeImmutable $limite): ?string
+    {
+        if ($this->status() === CalculadoraMeta::CONCLUIDA) {
+            return null;
+        }
+        if ($meses === null) {
+            return 'Sem depósitos nos últimos 3 meses: guarde um valor para ver a previsão.';
+        }
+        $quando = $hoje->modify('first day of this month')->modify("+{$meses} months");
+        $texto = sprintf(
+            'No ritmo atual (%s por mês), fica pronta em %d %s, em %s de %s',
+            Formatador::moeda($ritmo),
+            $meses,
+            $meses === 1 ? 'mês' : 'meses',
+            Formatador::nomeMes((int) $quando->format('n')),
+            $quando->format('Y'),
+        );
+        return $texto . ($limite !== null && $quando > $limite ? ', depois do prazo.' : '.');
     }
 }

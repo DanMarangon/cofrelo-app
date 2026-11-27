@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Cofrelo\Repositorio;
 
 use Cofrelo\Modelo\Meta;
+use DateTimeImmutable;
 
 final class MetaRepositorio extends Repositorio
 {
@@ -112,5 +113,27 @@ final class MetaRepositorio extends Repositorio
             'valor' => (float) $linha['valor'],
             'data' => (string) $linha['data'],
         ], $this->linhas('SELECT valor, data FROM meta_deposito WHERE meta_id = :meta ORDER BY data, id', ['meta' => $metaId]));
+    }
+
+    /**
+     * Ritmo de cada meta: média guardada por mês nos últimos 3 meses (RN14).
+     *
+     * @return array<int, float> id da meta => valor médio por mês
+     */
+    public function ritmosMensais(int $usuarioId, DateTimeImmutable $hoje): array
+    {
+        $linhas = $this->linhas(
+            'SELECT d.meta_id, SUM(d.valor) AS total
+               FROM meta_deposito d
+               JOIN meta m ON m.id = d.meta_id
+              WHERE m.usuario_id = :usuario AND d.data > :inicio AND d.data <= :hoje
+              GROUP BY d.meta_id',
+            ['usuario' => $usuarioId, 'inicio' => $hoje->modify('-3 months')->format('Y-m-d'), 'hoje' => $hoje->format('Y-m-d')]
+        );
+        $ritmos = [];
+        foreach ($linhas as $linha) {
+            $ritmos[(int) $linha['meta_id']] = round((float) $linha['total'] / 3, 2);
+        }
+        return $ritmos;
     }
 }

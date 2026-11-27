@@ -47,4 +47,23 @@ final class CalculadoraMetaTest extends TestCase
         self::assertSame(0, CalculadoraMeta::mesesRestantes($hoje, new DateTimeImmutable('2026-01-31')));
         self::assertNull(CalculadoraMeta::mesesRestantes($hoje, null));
     }
+
+    public function testPrevisaoQuandoORitmoFechaOsMesesCertinho(): void
+    {
+        // Faltam R$ 8.000 guardando R$ 1.000 por mês: 8 meses.
+        self::assertSame(8, CalculadoraMeta::mesesParaConcluir(12000, 20000, 1000));
+    }
+
+    public function testPrevisaoArredondaParaCimaQuandoSobraUmRestinho(): void
+    {
+        // Em 5 meses entram R$ 7.500; os R$ 500 que faltam só entram no 6º mês.
+        self::assertSame(6, CalculadoraMeta::mesesParaConcluir(12000, 20000, 1500));
+        self::assertSame(1, CalculadoraMeta::mesesParaConcluir(19999.99, 20000, 500));
+    }
+
+    public function testSemRitmoNaoHaPrevisaoEMetaConcluidaNaoPrecisaDeMaisMeses(): void
+    {
+        self::assertNull(CalculadoraMeta::mesesParaConcluir(0, 8000, 0));
+        self::assertSame(0, CalculadoraMeta::mesesParaConcluir(20000, 20000, 500));
+    }
 }

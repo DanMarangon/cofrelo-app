@@ -90,7 +90,7 @@
             <h3>Últimas transações</h3>
             <a class="botao botao-texto" href="<?= e(url('/transacoes')) ?>">Ver todas <svg class="icone icone-sm" aria-hidden="true"><use href="#i-direita"/></svg></a>
         </div>
-        <div class="tabela-area">
+        <div class="tabela-area" tabindex="0" role="region" aria-label="Tabela das últimas transações">
             <table class="tabela">
                 <thead>
                     <tr><th>Descrição</th><th>Categoria</th><th>Data</th><th class="direita">Valor</th></tr>

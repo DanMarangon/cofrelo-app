@@ -4,6 +4,12 @@ Todas as mudanças importantes do Cofrelo ficam registradas aqui. O formato segu
 
 Cada versão tem uma tag `vX.Y.Z` na `main`, uma release no GitHub e a imagem `ghcr.io/danmarangon/cofrelo-app:X.Y.Z`.
 
+## [1.1.0] - 2026-11-27
+
+### Adicionado
+
+- Previsão de conclusão de cada meta no ritmo dos últimos 3 meses (RN14): o cartão da meta diz em quantos meses ela fica pronta e em que mês, e a API devolve `ritmo_mensal`, `previsao_meses` e `previsao_rotulo` em `/api/metas`.
+
 ## [1.0.0] - 2026-11-26
 
 Primeira versão entregue.
@@ -33,4 +39,5 @@ Primeira versão entregue.
 - Exportação em CSV protegida contra injeção de fórmula no Excel.
 - Pipeline com PHPStan, zizmor e hadolint; actions fixadas pelo SHA do commit, permissões mínimas e imagem base fixada pelo digest.
 
+[1.1.0]: https://github.com/DanMarangon/cofrelo-app/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/DanMarangon/cofrelo-app/releases/tag/v1.0.0

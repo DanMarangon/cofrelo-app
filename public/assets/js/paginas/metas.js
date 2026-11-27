@@ -79,6 +79,8 @@ function cartaoDaMeta(meta) {
     meta.aporte_mensal_sugerido
       ? el('span', { classe: 'texto-2', texto: `Guarde ${formatarMoeda(meta.aporte_mensal_sugerido)} por mês para chegar no prazo.` })
       : null,
+    // Previsão de conclusão no ritmo dos últimos 3 meses (vem calculada pela API).
+    meta.previsao_rotulo ? el('span', { classe: 'texto-2 meta-previsao', texto: meta.previsao_rotulo }) : null,
     el('div', { classe: 'acoes' }, [
       el('button', {
         classe: `botao ${emProgresso ? 'botao-primario' : 'botao-secundario'}`,

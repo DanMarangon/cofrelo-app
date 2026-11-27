@@ -1,0 +1,16 @@
+.git
+.github
+.deploy
+.env
+.env.*
+!.env.example
+.phpunit.cache
+build
+docs
+node_modules
+storage/logs/*
+tests
+vendor
+*.md
+docker-compose*.yml
+scripts

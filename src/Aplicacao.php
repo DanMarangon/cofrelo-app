@@ -12,6 +12,7 @@ use Cofrelo\Controlador\Api\ContaControlador;
 use Cofrelo\Controlador\Api\MetaControlador;
 use Cofrelo\Controlador\Api\PainelControlador;
 use Cofrelo\Controlador\Api\TransacaoControlador;
+use Cofrelo\Controlador\PaginaControlador;
 use Cofrelo\Controlador\SaudeControlador;
 use Cofrelo\Http\ErroHttp;
 use Cofrelo\Http\Requisicao;
@@ -22,6 +23,7 @@ use Cofrelo\Suporte\Log;
 use Cofrelo\Suporte\Metricas;
 use Cofrelo\Suporte\Sessao;
 use Cofrelo\Suporte\Url;
+use Cofrelo\Suporte\Visao;
 
 /**
  * Coração da aplicação: registra as rotas, confere login e token CSRF, chama o controlador,
@@ -35,6 +37,7 @@ final class Aplicacao
     {
         $this->rotas = new Roteador();
         $this->registrarRotasDaApi();
+        $this->registrarRotasDasPaginas();
     }
 
     /** Usado pelo public/index.php: lê a requisição real, responde e grava o log. */
@@ -117,14 +120,42 @@ final class Aplicacao
         return [CabecalhosSeguranca::aplicar($resposta), $rota];
     }
 
-    /** @param array<string, string> $campos */
+    /** Erro em JSON para a API e em página HTML para o navegador. @param array<string, string> $campos */
     private function respostaDeErro(Requisicao $requisicao, int $status, string $mensagem, array $campos = []): Resposta
     {
+        $aceitaHtml = str_contains((string) $requisicao->cabecalho('accept'), 'text/html');
+        if (!$requisicao->ehApi() && $aceitaHtml) {
+            return Resposta::html(Visao::renderizar('erro', ['status' => $status, 'mensagem' => $mensagem], null), $status);
+        }
         $corpo = ['erro' => $mensagem, 'status' => $status];
         if ($campos !== []) {
             $corpo['campos'] = $campos;
         }
         return Resposta::json($corpo, $status);
+    }
+
+    private function registrarRotasDasPaginas(): void
+    {
+        $r = $this->rotas;
+        $pagina = static fn (string $nome): \Closure =>
+            static fn (): Resposta => (new PaginaControlador(Conexao::obter()))->mostrar($nome);
+        $acao = static fn (string $metodo): \Closure =>
+            static fn (Requisicao $requisicao): Resposta => (new PaginaControlador(Conexao::obter()))->$metodo($requisicao);
+        $publica = ['publica' => true];
+
+        $r->get('/', $acao('inicio'), $publica);
+        $r->get('/login', $acao('formularioEntrar'), $publica);
+        $r->post('/login', $acao('entrar'), $publica);
+        $r->get('/cadastro', $acao('formularioCadastro'), $publica);
+        $r->post('/cadastro', $acao('cadastrar'), $publica);
+        $r->post('/sair', $acao('sair'), $publica);
+
+        foreach (array_keys(PaginaControlador::PAGINAS) as $nome) {
+            $r->get('/' . $nome, $pagina($nome));
+        }
+        $r->post('/configuracoes/perfil', $acao('atualizarPerfil'));
+        $r->post('/configuracoes/senha', $acao('atualizarSenha'));
+        $r->post('/configuracoes/excluir', $acao('excluirConta'));
     }
 
     private function registrarRotasDaApi(): void

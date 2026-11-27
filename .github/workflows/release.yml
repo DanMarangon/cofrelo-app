@@ -1,0 +1,211 @@
+name: Release
+
+# Entrega contínua: cada tag de versão (v1.0.0, v1.1.0...) gera a imagem versionada no GHCR,
+# anexa a imagem à release do GitHub e testa a versão publicada num ambiente de homologação.
+on:
+  push:
+    tags: ["v*.*.*"]
+
+# Por padrão só leitura; o job que publica pede a escrita de que precisa.
+permissions:
+  contents: read
+
+env:
+  IMAGEM: ghcr.io/danmarangon/cofrelo-app
+
+jobs:
+  publicar:
+    name: Publicar a versão
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write   # criar a release e anexar os arquivos
+      packages: write   # publicar a imagem no GHCR
+    outputs:
+      versao: ${{ steps.versao.outputs.versao }}
+    steps:
+      - name: Obter o código com o histórico (para as notas da versão)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Ler a versão da tag
+        id: versao
+        run: echo "versao=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Definir as tags da imagem
+        id: meta
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
+        with:
+          images: ${{ env.IMAGEM }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest
+            type=sha,format=short,prefix=sha-
+
+      - name: Preparar o Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+
+      - name: Entrar no GitHub Container Registry
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Construir e publicar a imagem versionada
+        id: build
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+        with:
+          context: .
+          target: producao
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            APP_VERSION=${{ steps.versao.outputs.versao }}
+            APP_COMMIT=${{ github.sha }}
+          # Sem cache: a versão publicada é construída do zero, sem reaproveitar camadas de outras branches.
+          no-cache: true
+
+      - name: Empacotar a imagem para anexar à release
+        env:
+          VERSAO: ${{ steps.versao.outputs.versao }}
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          mkdir -p pacote
+          docker pull "$IMAGEM:$VERSAO"
+          docker save "$IMAGEM:$VERSAO" | gzip -6 > "pacote/cofrelo-imagem-$VERSAO.tar.gz"
+          {
+            echo "imagem=$IMAGEM:$VERSAO"
+            echo "digest=$DIGEST"
+            echo "id=$(docker image inspect --format '{{.Id}}' "$IMAGEM:$VERSAO")"
+            echo "commit=$GITHUB_SHA"
+            echo "execucao=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo "data=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > "pacote/imagem-$VERSAO.txt"
+          cp docker-compose.yml .env.example scripts/implantar.ps1 scripts/implantar.sh pacote/
+          (cd pacote && sha256sum -- * > SHA256SUMS)
+          cat "pacote/imagem-$VERSAO.txt"
+
+      - name: Vulnerabilidades da imagem publicada (Trivy)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ${{ env.IMAGEM }}:${{ steps.versao.outputs.versao }}
+          format: table
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "0"
+
+      - name: Escrever as notas da versão
+        env:
+          VERSAO: ${{ steps.versao.outputs.versao }}
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          anterior=$(git describe --tags --abbrev=0 "${GITHUB_REF_NAME}^" 2>/dev/null || true)
+          {
+            echo "## Cofrelo $VERSAO"
+            echo ""
+            echo "Imagem: \`$IMAGEM:$VERSAO\` (também \`latest\`)"
+            echo ""
+            echo "Digest: \`$DIGEST\`"
+            echo ""
+            echo "### Como implantar"
+            echo ""
+            echo '```powershell'
+            echo ".\\scripts\\implantar.ps1 -Versao $VERSAO"
+            echo '```'
+            echo ""
+            echo "O script troca a versão no Docker Compose, confere o /health e volta para a versão anterior se a nova não ficar saudável."
+            echo ""
+            if [ -n "$anterior" ]; then
+              echo "### Mudanças desde $anterior"
+              echo ""
+              git log --no-merges --pretty='- %s' "$anterior..$GITHUB_REF_NAME"
+            else
+              echo "### Primeira versão"
+              echo ""
+              git log --no-merges --pretty='- %s' "$GITHUB_REF_NAME"
+            fi
+          } > notas.md
+          cat notas.md
+
+      - name: Criar a release no GitHub com a imagem anexada
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "$GITHUB_REF_NAME" --title "Cofrelo ${GITHUB_REF_NAME#v}" --notes-file notas.md pacote/*
+
+  homologacao:
+    name: Homologação da versão publicada
+    needs: publicar
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: read
+    env:
+      VERSAO: ${{ needs.publicar.outputs.versao }}
+    steps:
+      - name: Obter o código (Docker Compose e scripts)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+
+      - name: Entrar no GitHub Container Registry
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Criar o .env da homologação com senhas aleatórias
+        run: |
+          {
+            echo "DB_NAME=cofrelo"
+            echo "DB_USER=cofrelo"
+            echo "DB_PASS=$(openssl rand -hex 16)"
+            echo "DB_ROOT_PASS=$(openssl rand -hex 16)"
+            echo "GRAFANA_SENHA=$(openssl rand -hex 16)"
+            echo "COFRELO_VERSAO=$VERSAO"
+          } > .env
+
+      - name: Implantar a imagem publicada (sem construir nada)
+        run: |
+          docker compose pull app
+          docker compose up -d --no-build
+          for _ in $(seq 1 40); do curl -fsS http://localhost:8080/health > /dev/null 2>&1 && break; sleep 3; done
+          curl -fsS http://localhost:8080/health | tee saude.json
+          echo
+          grep -q "\"versao\":\"$VERSAO\"" saude.json
+
+      - name: Testes de fumaça na versão implantada
+        run: |
+          curl -fsS -c cookies.txt -H 'Content-Type: application/json' \
+               -d '{"email":"mariana@cofrelo.app","senha":"cofrelo123"}' http://localhost:8080/api/auth/entrar | tee entrada.json > /dev/null
+          token=$(sed -E 's/.*"csrf":"([^"]+)".*/\1/' entrada.json)
+          curl -fsS -b cookies.txt http://localhost:8080/api/resumo | grep -q '"saldo_total"'
+          criada=$(curl -fsS -b cookies.txt -H 'Content-Type: application/json' -H "X-CSRF-Token: $token" \
+                   -d '{"tipo":"despesa","valor":42.5,"descricao":"Teste de homologação","categoria_id":2,"conta_id":1,"data":"'"$(date +%F)"'","status":"pago"}' \
+                   http://localhost:8080/api/transacoes)
+          id=$(echo "$criada" | sed -E 's/^\{"id":([0-9]+).*/\1/')
+          curl -fsS -o /dev/null -w "Exclusão: %{http_code}\n" -b cookies.txt -H "X-CSRF-Token: $token" -X DELETE "http://localhost:8080/api/transacoes/$id"
+          curl -fsS http://localhost:8080/metrics | grep -q '^cofrelo_banco_disponivel 1'
+          echo "Homologação aprovada: a versão $VERSAO responde, autentica, cria e exclui transações e expõe métricas."
+
+      - name: Mostrar os logs se algo falhar
+        if: failure()
+        run: docker compose logs --tail 80
+
+      - name: Resumo
+        if: success()
+        run: |
+          {
+            echo "### Homologação da versão $VERSAO aprovada"
+            echo ""
+            echo '```json'
+            cat saude.json
+            echo ""
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

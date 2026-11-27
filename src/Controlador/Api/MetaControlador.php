@@ -20,7 +20,11 @@ final class MetaControlador extends Controlador
     public function listar(Requisicao $requisicao): Resposta
     {
         $hoje = $this->hoje();
-        $metas = array_map(static fn (Meta $meta): array => $meta->paraArray($hoje), $this->metas()->listar($this->usuario()));
+        $ritmos = $this->metas()->ritmosMensais($this->usuario(), $hoje);
+        $metas = array_map(
+            static fn (Meta $meta): array => $meta->paraArray($hoje, $ritmos[$meta->id] ?? 0.0),
+            $this->metas()->listar($this->usuario())
+        );
         $porStatus = array_count_values(array_column($metas, 'status'));
         $ativas = array_values(array_filter($metas, static fn (array $m): bool => $m['status'] !== CalculadoraMeta::CONCLUIDA));
         usort($ativas, static fn (array $a, array $b): int => $b['percentual'] <=> $a['percentual']);
@@ -41,7 +45,7 @@ final class MetaControlador extends Controlador
     public function mostrar(Requisicao $requisicao): Resposta
     {
         $meta = $this->metas()->buscar($this->usuario(), $requisicao->idDaRota()) ?? throw ErroHttp::naoEncontrado('Meta não encontrada.');
-        return Resposta::json($meta->paraArray($this->hoje()) + ['depositos' => $this->metas()->depositos($meta->id)]);
+        return Resposta::json(($this->emArray($meta) ?? []) + ['depositos' => $this->metas()->depositos($meta->id)]);
     }
 
     public function criar(Requisicao $requisicao): Resposta
@@ -51,7 +55,7 @@ final class MetaControlador extends Controlador
         $this->falharSeInvalido($erros);
         $id = $this->metas()->criar($usuario, $dados);
         Log::info('meta.criada', ['usuario_id' => $usuario, 'meta_id' => $id]);
-        return Resposta::json($this->metas()->buscar($usuario, $id)?->paraArray($this->hoje()), 201);
+        return Resposta::json($this->emArray($this->metas()->buscar($usuario, $id)), 201);
     }
 
     public function atualizar(Requisicao $requisicao): Resposta
@@ -64,7 +68,7 @@ final class MetaControlador extends Controlador
         [$erros, $dados] = (new ValidadorCadastros())->meta($requisicao->corpo, $this->hoje(), false);
         $this->falharSeInvalido($erros);
         $this->metas()->atualizar($usuario, $id, $dados);
-        return Resposta::json($this->metas()->buscar($usuario, $id)?->paraArray($this->hoje()));
+        return Resposta::json($this->emArray($this->metas()->buscar($usuario, $id)));
     }
 
     public function excluir(Requisicao $requisicao): Resposta
@@ -85,7 +89,21 @@ final class MetaControlador extends Controlador
         $meta = $this->metas()->depositar($usuario, $requisicao->idDaRota(), $dados['valor'], $dados['data'])
             ?? throw ErroHttp::naoEncontrado('Meta não encontrada.');
         Log::info('meta.deposito', ['usuario_id' => $usuario, 'meta_id' => $meta->id, 'valor' => $dados['valor']]);
-        return Resposta::json($meta->paraArray($this->hoje()), 201);
+        return Resposta::json($this->emArray($meta), 201);
+    }
+
+    /**
+     * Meta pronta para a resposta, com a previsão calculada no ritmo dos últimos 3 meses.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function emArray(?Meta $meta): ?array
+    {
+        if ($meta === null) {
+            return null;
+        }
+        $hoje = $this->hoje();
+        return $meta->paraArray($hoje, $this->metas()->ritmosMensais($this->usuario(), $hoje)[$meta->id] ?? 0.0);
     }
 
     private function metas(): MetaRepositorio

@@ -650,3 +650,6 @@ kbd { display: inline-block; min-width: 26px; padding: 3px 7px; border: 1px soli
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* Previsão de conclusão da meta (versão 1.1.0). */
+.meta-previsao { display: block; padding-left: 10px; border-left: 3px solid var(--lima); }

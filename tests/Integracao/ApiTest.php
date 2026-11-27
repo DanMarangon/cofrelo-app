@@ -200,6 +200,21 @@ final class ApiTest extends TesteComBanco
         self::assertSame('em_progresso', $depois['status']);
     }
 
+    public function testMetasTrazemAPrevisaoNoRitmoDosUltimosTresMeses(): void
+    {
+        $usuario = (new DadosDeExemplo(self::$pdo, Relogio::hoje()))->criar();
+        Sessao::entrar($usuario);
+
+        $metas = array_column($this->chamar('GET', '/api/metas')->dados()['metas'], null, 'nome');
+
+        // Reserva: R$ 3.800 guardados de 27/08 a 26/11 dão R$ 1.266,67 por mês; faltam R$ 8.000.
+        $reserva = $metas['Reserva de emergência'];
+        self::assertSame(1266.67, $reserva['ritmo_mensal']);
+        self::assertSame(7, $reserva['previsao_meses']);
+        self::assertStringContainsString('fica pronta em 7 meses, em junho de 2027.', $reserva['previsao_rotulo']);
+        self::assertNull($metas['Viagem de férias']['previsao_meses']);
+    }
+
     public function testContaComTransacoesNaoPodeSerExcluida(): void
     {
         $this->entrarComoNovoUsuario();

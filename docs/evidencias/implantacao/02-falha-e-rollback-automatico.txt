@@ -1,38 +1,38 @@
 PS> .\scripts\implantar.ps1 -Versao 1.1.0 -SimularFalha
-# 27/11/2026 06:19:00
-[06:19:00] Versão em execução: 1.0.0. Versão pedida: 1.1.0.
-[06:19:00] Baixando ghcr.io/danmarangon/cofrelo-app:1.1.0 do GitHub Container Registry...
-[06:19:01] Sem acesso ao registro. Baixando a imagem anexada à release v1.1.0 (GitHub CLI)...
-[06:19:32] Imagem conferida: sha256:e7826c81bb56f7289a89efbba6b5c5f79109af4d45926a986bd792de31251072
-[06:19:32] Trocando o container pela versão 1.1.0 (estratégia recreate)...
-[06:19:32]    Container cofrelo-banco-1 Running 
-[06:19:32]    Container cofrelo-app-1 Recreate 
-[06:19:36]    Container cofrelo-app-1 Recreated 
-[06:19:36]    Container cofrelo-banco-1 Waiting 
-[06:19:37]    Container cofrelo-banco-1 Healthy 
-[06:19:37]    Container cofrelo-app-1 Starting 
-[06:19:37]    Container cofrelo-app-1 Started 
-[06:20:37] A versão 1.1.0 não ficou saudável em 60 segundos. Últimas linhas do log:
-  app-1  | {"ts":"2026-11-27T06:20:27-03:00","nivel":"erro","evento":"saude.falha","requisicao":"e6ba15181a8d76d0","status":"falha","versao":"1.1.0","commit":"f0f17e5c8da1","ambiente":"production","banco":"ok","tempo_resposta_ms":1.2,"verificado_em":"2026-11-27T06:20:27-03:00","motivo":"Falha simulada pela variável SIMULAR_FALHA (teste de rollback)."}
-  app-1  | {"ts":"2026-11-27T06:20:27-03:00","nivel":"info","evento":"http.requisicao","requisicao":"e6ba15181a8d76d0","metodo":"GET","caminho":"/health","rota":"/health","status":503,"duracao_ms":1.4,"usuario_id":null,"ip":"127.0.0.1"}
-  app-1  | {"ts":"2026-11-27T06:20:27-03:00","nivel":"erro","evento":"saude.falha","requisicao":"503c0786e526d329","status":"falha","versao":"1.1.0","commit":"f0f17e5c8da1","ambiente":"production","banco":"ok","tempo_resposta_ms":1.3,"verificado_em":"2026-11-27T06:20:27-03:00","motivo":"Falha simulada pela variável SIMULAR_FALHA (teste de rollback)."}
-  app-1  | {"ts":"2026-11-27T06:20:27-03:00","nivel":"info","evento":"http.requisicao","requisicao":"503c0786e526d329","metodo":"GET","caminho":"/health","rota":"/health","status":503,"duracao_ms":1.4,"usuario_id":null,"ip":"172.18.0.1"}
-  app-1  | {"ts":"2026-11-27T06:20:29-03:00","nivel":"erro","evento":"saude.falha","requisicao":"aabf2f8414fc3fd6","status":"falha","versao":"1.1.0","commit":"f0f17e5c8da1","ambiente":"production","banco":"ok","tempo_resposta_ms":1.2,"verificado_em":"2026-11-27T06:20:29-03:00","motivo":"Falha simulada pela variável SIMULAR_FALHA (teste de rollback)."}
-  app-1  | {"ts":"2026-11-27T06:20:29-03:00","nivel":"info","evento":"http.requisicao","requisicao":"aabf2f8414fc3fd6","metodo":"GET","caminho":"/health","rota":"/health","status":503,"duracao_ms":1.4,"usuario_id":null,"ip":"172.18.0.1"}
-  app-1  | {"ts":"2026-11-27T06:20:31-03:00","nivel":"erro","evento":"saude.falha","requisicao":"e1b79512c30184b8","status":"falha","versao":"1.1.0","commit":"f0f17e5c8da1","ambiente":"production","banco":"ok","tempo_resposta_ms":1.3,"verificado_em":"2026-11-27T06:20:31-03:00","motivo":"Falha simulada pela variável SIMULAR_FALHA (teste de rollback)."}
-  app-1  | {"ts":"2026-11-27T06:20:31-03:00","nivel":"info","evento":"http.requisicao","requisicao":"e1b79512c30184b8","metodo":"GET","caminho":"/health","rota":"/health","status":503,"duracao_ms":1.4,"usuario_id":null,"ip":"172.18.0.1"}
-  app-1  | {"ts":"2026-11-27T06:20:33-03:00","nivel":"erro","evento":"saude.falha","requisicao":"dc1dca6f192e3492","status":"falha","versao":"1.1.0","commit":"f0f17e5c8da1","ambiente":"production","banco":"ok","tempo_resposta_ms":1.2,"verificado_em":"2026-11-27T06:20:33-03:00","motivo":"Falha simulada pela variável SIMULAR_FALHA (teste de rollback)."}
-  app-1  | {"ts":"2026-11-27T06:20:33-03:00","nivel":"info","evento":"http.requisicao","requisicao":"dc1dca6f192e3492","metodo":"GET","caminho":"/health","rota":"/health","status":503,"duracao_ms":1.4,"usuario_id":null,"ip":"172.18.0.1"}
-  app-1  | {"ts":"2026-11-27T06:20:35-03:00","nivel":"erro","evento":"saude.falha","requisicao":"7cf713614382b742","status":"falha","versao":"1.1.0","commit":"f0f17e5c8da1","ambiente":"production","banco":"ok","tempo_resposta_ms":1.2,"verificado_em":"2026-11-27T06:20:35-03:00","motivo":"Falha simulada pela variável SIMULAR_FALHA (teste de rollback)."}
-  app-1  | {"ts":"2026-11-27T06:20:35-03:00","nivel":"info","evento":"http.requisicao","requisicao":"7cf713614382b742","metodo":"GET","caminho":"/health","rota":"/health","status":503,"duracao_ms":1.4,"usuario_id":null,"ip":"172.18.0.1"}
-[06:20:38] ROLLBACK: voltando para a versão 1.0.0...
-[06:20:38]    Container cofrelo-banco-1 Running 
-[06:20:38]    Container cofrelo-app-1 Recreate 
-[06:20:39]    Container cofrelo-app-1 Recreated 
-[06:20:39]    Container cofrelo-banco-1 Waiting 
-[06:20:40]    Container cofrelo-banco-1 Healthy 
-[06:20:40]    Container cofrelo-app-1 Starting 
-[06:20:40]    Container cofrelo-app-1 Started 
-[06:20:40] ROLLBACK OK: a versão 1.0.0 voltou a atender (health ok, commit 85233456ba4f).
+# 27/11/2026 07:57:22
+[07:57:22] Versão em execução: 1.0.0. Versão pedida: 1.1.0.
+[07:57:22] Baixando ghcr.io/danmarangon/cofrelo-app:1.1.0 do GitHub Container Registry...
+[07:57:22] Sem acesso ao registro. Baixando a imagem anexada à release v1.1.0 (GitHub CLI)...
+[07:57:54] Imagem conferida: sha256:893baa6e4146116068f9291cc4ac2e725cd0638c92e124ca6fc32520c155404f
+[07:57:54] Trocando o container pela versão 1.1.0 (estratégia recreate)...
+[07:57:54]    Container cofrelo-banco-1 Running 
+[07:57:54]    Container cofrelo-app-1 Recreate 
+[07:57:56]    Container cofrelo-app-1 Recreated 
+[07:57:56]    Container cofrelo-banco-1 Waiting 
+[07:57:56]    Container cofrelo-banco-1 Healthy 
+[07:57:56]    Container cofrelo-app-1 Starting 
+[07:57:56]    Container cofrelo-app-1 Started 
+[07:58:57] A versão 1.1.0 não ficou saudável em 60 segundos. Últimas linhas do log:
+  app-1  | {"ts":"2026-11-27T07:58:46-03:00","nivel":"erro","evento":"saude.falha","requisicao":"df8fba9028599219","status":"falha","versao":"1.1.0","commit":"e11e1073e2fd","ambiente":"production","banco":"ok","tempo_resposta_ms":1.3,"verificado_em":"2026-11-27T07:58:46-03:00","motivo":"Falha simulada pela variável SIMULAR_FALHA (teste de rollback)."}
+  app-1  | {"ts":"2026-11-27T07:58:46-03:00","nivel":"info","evento":"http.requisicao","requisicao":"df8fba9028599219","metodo":"GET","caminho":"/health","rota":"/health","status":503,"duracao_ms":1.4,"usuario_id":null,"ip":"127.0.0.1"}
+  app-1  | {"ts":"2026-11-27T07:58:47-03:00","nivel":"erro","evento":"saude.falha","requisicao":"b0d919f849e945b7","status":"falha","versao":"1.1.0","commit":"e11e1073e2fd","ambiente":"production","banco":"ok","tempo_resposta_ms":1.2,"verificado_em":"2026-11-27T07:58:47-03:00","motivo":"Falha simulada pela variável SIMULAR_FALHA (teste de rollback)."}
+  app-1  | {"ts":"2026-11-27T07:58:47-03:00","nivel":"info","evento":"http.requisicao","requisicao":"b0d919f849e945b7","metodo":"GET","caminho":"/health","rota":"/health","status":503,"duracao_ms":1.4,"usuario_id":null,"ip":"172.18.0.1"}
+  app-1  | {"ts":"2026-11-27T07:58:49-03:00","nivel":"erro","evento":"saude.falha","requisicao":"30cb9d55c8f99930","status":"falha","versao":"1.1.0","commit":"e11e1073e2fd","ambiente":"production","banco":"ok","tempo_resposta_ms":1.2,"verificado_em":"2026-11-27T07:58:49-03:00","motivo":"Falha simulada pela variável SIMULAR_FALHA (teste de rollback)."}
+  app-1  | {"ts":"2026-11-27T07:58:49-03:00","nivel":"info","evento":"http.requisicao","requisicao":"30cb9d55c8f99930","metodo":"GET","caminho":"/health","rota":"/health","status":503,"duracao_ms":1.4,"usuario_id":null,"ip":"172.18.0.1"}
+  app-1  | {"ts":"2026-11-27T07:58:51-03:00","nivel":"erro","evento":"saude.falha","requisicao":"f22bc2e10a0df9dd","status":"falha","versao":"1.1.0","commit":"e11e1073e2fd","ambiente":"production","banco":"ok","tempo_resposta_ms":1.3,"verificado_em":"2026-11-27T07:58:51-03:00","motivo":"Falha simulada pela variável SIMULAR_FALHA (teste de rollback)."}
+  app-1  | {"ts":"2026-11-27T07:58:51-03:00","nivel":"info","evento":"http.requisicao","requisicao":"f22bc2e10a0df9dd","metodo":"GET","caminho":"/health","rota":"/health","status":503,"duracao_ms":1.4,"usuario_id":null,"ip":"172.18.0.1"}
+  app-1  | {"ts":"2026-11-27T07:58:53-03:00","nivel":"erro","evento":"saude.falha","requisicao":"7bc4415362101f35","status":"falha","versao":"1.1.0","commit":"e11e1073e2fd","ambiente":"production","banco":"ok","tempo_resposta_ms":1.2,"verificado_em":"2026-11-27T07:58:53-03:00","motivo":"Falha simulada pela variável SIMULAR_FALHA (teste de rollback)."}
+  app-1  | {"ts":"2026-11-27T07:58:53-03:00","nivel":"info","evento":"http.requisicao","requisicao":"7bc4415362101f35","metodo":"GET","caminho":"/health","rota":"/health","status":503,"duracao_ms":1.4,"usuario_id":null,"ip":"172.18.0.1"}
+  app-1  | {"ts":"2026-11-27T07:58:55-03:00","nivel":"erro","evento":"saude.falha","requisicao":"e5a9ad7473fb3ad0","status":"falha","versao":"1.1.0","commit":"e11e1073e2fd","ambiente":"production","banco":"ok","tempo_resposta_ms":1.2,"verificado_em":"2026-11-27T07:58:55-03:00","motivo":"Falha simulada pela variável SIMULAR_FALHA (teste de rollback)."}
+  app-1  | {"ts":"2026-11-27T07:58:55-03:00","nivel":"info","evento":"http.requisicao","requisicao":"e5a9ad7473fb3ad0","metodo":"GET","caminho":"/health","rota":"/health","status":503,"duracao_ms":1.4,"usuario_id":null,"ip":"172.18.0.1"}
+[07:58:57] ROLLBACK: voltando para a versão 1.0.0...
+[07:58:57]    Container cofrelo-banco-1 Running 
+[07:58:57]    Container cofrelo-app-1 Recreate 
+[07:58:58]    Container cofrelo-app-1 Recreated 
+[07:58:58]    Container cofrelo-banco-1 Waiting 
+[07:58:59]    Container cofrelo-banco-1 Healthy 
+[07:58:59]    Container cofrelo-app-1 Starting 
+[07:58:59]    Container cofrelo-app-1 Started 
+[07:59:01] ROLLBACK OK: a versão 1.0.0 voltou a atender (health ok, commit 26e1c6eb1230).
 # código de saída: 1
 

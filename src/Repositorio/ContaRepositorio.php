@@ -6,6 +6,10 @@ namespace Cofrelo\Repositorio;
 
 use Cofrelo\Modelo\Conta;
 
+/**
+ * Consultas SQL das contas (corrente, poupança, carteira...). O saldo não fica gravado: é calculado na hora,
+ * somando as transações pagas da conta (RN05).
+ */
 final class ContaRepositorio extends Repositorio
 {
     /**

@@ -6,6 +6,9 @@ namespace Cofrelo\Repositorio;
 
 use Cofrelo\Modelo\Usuario;
 
+/**
+ * Consultas SQL dos usuários. A senha é guardada só como hash (password_hash), nunca o texto digitado.
+ */
 final class UsuarioRepositorio extends Repositorio
 {
     public function buscar(int $id): ?Usuario

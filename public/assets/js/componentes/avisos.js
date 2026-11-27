@@ -1,3 +1,4 @@
+// Avisos rápidos (toasts) no canto da tela: "Transação salva", "Não foi possível excluir"... Somem sozinhos.
 import { el, icone } from '../nucleo/dom.js';
 
 /** Aviso rápido no canto da tela ("Transação salva"). */

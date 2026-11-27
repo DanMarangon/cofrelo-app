@@ -48,14 +48,31 @@ final class SaudeControlador
         return Resposta::json($corpo, $saudavel ? 200 : 503);
     }
 
+    /**
+     * /metrics: números da aplicação no formato texto que o Prometheus lê a cada 15 segundos.
+     * Cada métrica tem uma linha "# HELP" (o que é), uma "# TYPE" (gauge = valor atual, counter = só cresce)
+     * e as linhas com os valores.
+     */
     public function metricas(Requisicao $requisicao): Resposta
     {
-        $linhas = [
-            '# HELP cofrelo_info Versão em execução.',
-            '# TYPE cofrelo_info gauge',
-            sprintf('cofrelo_info{versao="%s",commit="%s"} 1', self::rotulo(Config::versao()), self::rotulo(substr(Config::commit(), 0, 12))),
-        ];
+        $linhas = array_merge(self::metricasDaVersao(), self::metricasDoBanco(), self::metricasDasRequisicoes());
+        return Resposta::texto(implode("\n", $linhas) . "\n", 200, 'text/plain; version=0.0.4; charset=utf-8');
+    }
 
+    /** @return list<string> */
+    private static function metricasDaVersao(): array
+    {
+        $rotulos = sprintf('{versao="%s",commit="%s"}', self::rotulo(Config::versao()), self::rotulo(substr(Config::commit(), 0, 12)));
+        return self::metrica('cofrelo_info', 'gauge', 'Versão em execução.', ["cofrelo_info{$rotulos} 1"]);
+    }
+
+    /**
+     * Se o banco responde e quantos registros ele tem. O alerta BancoIndisponivel olha a primeira.
+     *
+     * @return list<string>
+     */
+    private static function metricasDoBanco(): array
+    {
         $bancoOk = 1;
         $totais = ['usuarios' => 0, 'transacoes' => 0, 'metas' => 0];
         try {
@@ -63,36 +80,52 @@ final class SaudeControlador
             foreach (['usuarios' => 'usuario', 'transacoes' => 'transacao', 'metas' => 'meta'] as $nome => $tabela) {
                 $totais[$nome] = (int) $pdo->query("SELECT COUNT(*) FROM {$tabela}")->fetchColumn();
             }
-        } catch (\Throwable $erro) {
+        } catch (\Throwable) {
             $bancoOk = 0;
         }
-        $linhas[] = '# HELP cofrelo_banco_disponivel 1 se o banco respondeu na última verificação.';
-        $linhas[] = '# TYPE cofrelo_banco_disponivel gauge';
-        $linhas[] = "cofrelo_banco_disponivel {$bancoOk}";
+        $linhas = self::metrica('cofrelo_banco_disponivel', 'gauge', '1 se o banco respondeu na última verificação.',
+            ["cofrelo_banco_disponivel {$bancoOk}"]);
         foreach ($totais as $nome => $valor) {
-            $linhas[] = "# HELP cofrelo_{$nome}_total Quantidade de registros de {$nome} no banco.";
-            $linhas[] = "# TYPE cofrelo_{$nome}_total gauge";
-            $linhas[] = "cofrelo_{$nome}_total {$valor}";
+            $linhas = array_merge($linhas, self::metrica("cofrelo_{$nome}_total", 'gauge',
+                "Quantidade de registros de {$nome} no banco.", ["cofrelo_{$nome}_total {$valor}"]));
         }
+        return $linhas;
+    }
 
-        if (Metricas::disponivel()) {
-            $dados = Metricas::ler();
-            $linhas[] = '# HELP cofrelo_requisicoes_total Requisições atendidas por método, rota e classe de status.';
-            $linhas[] = '# TYPE cofrelo_requisicoes_total counter';
-            foreach ($dados['requisicoes'] as $chave => $valor) {
-                [$metodo, $rota, $classe] = array_pad(explode('|', $chave), 3, '');
-                $linhas[] = sprintf('cofrelo_requisicoes_total{metodo="%s",rota="%s",status="%s"} %d', self::rotulo($metodo), self::rotulo($rota), self::rotulo($classe), $valor);
-            }
-            $linhas[] = '# HELP cofrelo_requisicao_duracao_ms Tempo das requisições em milissegundos.';
-            $linhas[] = '# TYPE cofrelo_requisicao_duracao_ms summary';
-            $linhas[] = 'cofrelo_requisicao_duracao_ms_sum ' . round($dados['duracao_soma'], 1);
-            $linhas[] = 'cofrelo_requisicao_duracao_ms_count ' . (int) $dados['duracao_contagem'];
-            $linhas[] = '# HELP cofrelo_erros_total Respostas com erro interno (status 5xx).';
-            $linhas[] = '# TYPE cofrelo_erros_total counter';
-            $linhas[] = 'cofrelo_erros_total ' . (int) $dados['erros'];
+    /**
+     * Contadores guardados no APCu a cada requisição (src/Suporte/Metricas.php).
+     *
+     * @return list<string>
+     */
+    private static function metricasDasRequisicoes(): array
+    {
+        if (!Metricas::disponivel()) {
+            return [];
         }
+        $dados = Metricas::ler();
+        $porRota = [];
+        foreach ($dados['requisicoes'] as $chave => $valor) {
+            [$metodo, $rota, $classe] = array_pad(explode('|', $chave), 3, '');
+            $porRota[] = sprintf('cofrelo_requisicoes_total{metodo="%s",rota="%s",status="%s"} %d',
+                self::rotulo($metodo), self::rotulo($rota), self::rotulo($classe), $valor);
+        }
+        return array_merge(
+            self::metrica('cofrelo_requisicoes_total', 'counter', 'Requisições atendidas por método, rota e classe de status.', $porRota),
+            self::metrica('cofrelo_requisicao_duracao_ms', 'summary', 'Tempo das requisições em milissegundos.', [
+                'cofrelo_requisicao_duracao_ms_sum ' . round($dados['duracao_soma'], 1),
+                'cofrelo_requisicao_duracao_ms_count ' . (int) $dados['duracao_contagem'],
+            ]),
+            self::metrica('cofrelo_erros_total', 'counter', 'Respostas com erro interno (status 5xx).', ['cofrelo_erros_total ' . (int) $dados['erros']]),
+        );
+    }
 
-        return Resposta::texto(implode("\n", $linhas) . "\n", 200, 'text/plain; version=0.0.4; charset=utf-8');
+    /**
+     * @param list<string> $valores
+     * @return list<string>
+     */
+    private static function metrica(string $nome, string $tipo, string $ajuda, array $valores): array
+    {
+        return ["# HELP {$nome} {$ajuda}", "# TYPE {$nome} {$tipo}", ...$valores];
     }
 
     private static function rotulo(string $valor): string

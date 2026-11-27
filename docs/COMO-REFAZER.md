@@ -77,6 +77,7 @@ O arquivo `Cofrelo - Grupo 2 - Entrega DW.zip` vai para a pasta Downloads. Ele t
 | `gerar_briefing.py` | Briefing (Word e PDF) |
 | `gerar_documentacao.py` | Documentação do sistema no padrão ABNT (Word e PDF) |
 | `gerar_evidencias_devops.py` | PDF de evidências de DevOps |
+| `gerar_tecnologias.py` | Documento das tecnologias e do que cada uma soma ao projeto (`docs/TECNOLOGIAS.md` e PDF) |
 | `gerar_slides.py` | Slides das apresentações de DW e de DevOps (PowerPoint e PDF), com notas do apresentador |
 | `conteudo.py` | Textos compartilhados: requisitos, regras de negócio, briefing e uso do JavaScript |
 | `abnt.py`, `navegador.py` | Formatação ABNT no Word e controle do Edge |

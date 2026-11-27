@@ -6,6 +6,9 @@ namespace Cofrelo\Repositorio;
 
 use Cofrelo\Modelo\Categoria;
 
+/**
+ * Consultas SQL das categorias. As categorias são as mesmas para todos os usuários (criadas pelo schema.sql).
+ */
 final class CategoriaRepositorio extends Repositorio
 {
     /** @return Categoria[] */

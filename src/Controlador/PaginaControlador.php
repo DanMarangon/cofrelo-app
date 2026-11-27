@@ -6,6 +6,7 @@ namespace Cofrelo\Controlador;
 
 use Cofrelo\Banco\DadosDeExemplo;
 use Cofrelo\Config;
+use Cofrelo\Http\ErroHttp;
 use Cofrelo\Http\Requisicao;
 use Cofrelo\Http\Resposta;
 use Cofrelo\Repositorio\ContaRepositorio;
@@ -79,7 +80,13 @@ final class PaginaControlador extends Controlador
     public function entrar(Requisicao $requisicao): Resposta
     {
         $email = trim((string) ($requisicao->corpo['email'] ?? ''));
-        $usuario = $this->autenticacao()->entrar($email, (string) ($requisicao->corpo['senha'] ?? ''));
+        try {
+            $usuario = $this->autenticacao()->entrar($email, (string) ($requisicao->corpo['senha'] ?? ''), $requisicao->ip);
+        } catch (ErroHttp $erro) {
+            Sessao::avisar('erro', $erro->getMessage());
+            Sessao::lembrar(['email' => $email]);
+            return Resposta::redirecionar(Url::para('/login'));
+        }
         if ($usuario === null) {
             Sessao::avisar('erro', 'E-mail ou senha incorretos. Confira e tente de novo.');
             Sessao::lembrar(['email' => $email]);
@@ -109,6 +116,7 @@ final class PaginaControlador extends Controlador
     public function cadastrar(Requisicao $requisicao): Resposta
     {
         [$erros, $dados] = (new ValidadorCadastros())->usuario($requisicao->corpo, true);
+        $id = null;
         if ($erros === []) {
             [$erros, $id] = $this->autenticacao()->cadastrar($dados);
         }

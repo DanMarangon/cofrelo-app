@@ -52,7 +52,7 @@ Funcionalidades principais:
 - **Notificações** de contas pendentes, cobranças chegando, orçamento quase no fim e metas com prazo próximo.
 - **Configurações** de perfil, orçamento e senha, e **Central de ajuda** com busca.
 
-O visual segue o protótipo feito no Figma ([`docs/prototipo`](docs/prototipo)).
+O visual segue o protótipo feito no Figma ([`docs/prototipo`](docs/prototipo)). Todas as páginas passam na auditoria de acessibilidade WCAG 2.2 AA do axe-core, no computador e no celular (`python docs/ferramentas/auditar_acessibilidade.py`).
 
 ## 2. Como executar
 
@@ -145,8 +145,8 @@ Escolhemos o GitFlow porque a disciplina pede versões entregues com rastreabili
 
 | Job | Etapas |
 |---|---|
-| Validação e testes | checkout, preparar PHP 8.3 e Node 22, `composer validate`, instalar dependências (com cache), verificar a sintaxe de todos os arquivos PHP, testes do JavaScript, PHPUnit com um MySQL de serviço, publicar o resultado dos testes no Actions e guardar os relatórios JUnit |
-| Verificações de segurança | `composer audit` (dependências com vulnerabilidades) e Gitleaks (senhas e chaves no histórico) |
+| Validação e testes | checkout, preparar PHP 8.3 e Node 22, `composer validate`, instalar dependências (com cache), verificar a sintaxe de todos os arquivos PHP, análise estática com PHPStan (nível 6), testes do JavaScript, PHPUnit com um MySQL de serviço, publicar o resultado dos testes no Actions e guardar os relatórios JUnit |
+| Verificações de segurança | `composer audit` (dependências com vulnerabilidades), Gitleaks (senhas e chaves no histórico), zizmor (falhas de segurança nos próprios workflows) e hadolint (boas práticas do Dockerfile) |
 | Imagem Docker | construir a imagem de produção, subir com um MySQL e testar `/health`, login e API, Trivy (vulnerabilidades críticas com correção bloqueiam) e publicar no GHCR nos pushes da `develop` e da `main` |
 
 **CD** (`.github/workflows/release.yml`): roda quando uma tag `vX.Y.Z` é criada na `main`.
@@ -165,12 +165,12 @@ Construção, teste, entrega e implantação ficam separados assim:
 
 ## 6. Testes automatizados
 
-68 casos no total, todos rodando no CI. Se qualquer um falhar, o pipeline fica vermelho e a imagem não é publicada.
+77 casos no total, todos rodando no CI. Se qualquer um falhar, o pipeline fica vermelho e a imagem não é publicada.
 
 | Conjunto | Casos | O que cobre |
 |---|---|---|
-| `tests/Unitario` (PHPUnit) | 28 | Validação de transações (RN03 a RN07), cálculo das metas, indicadores, formatação e roteador |
-| `tests/Integracao` (PHPUnit + MySQL) | 24 | Repositórios, dados de exemplo, endpoints da API (login, CSRF, CRUD, 401, 404, 405, 409, 422) e páginas |
+| `tests/Unitario` (PHPUnit) | 36 | Validação de transações (RN03 a RN07), cálculo das metas, indicadores, formatação, roteador, limite de tentativas de login e proteção do CSV contra fórmulas |
+| `tests/Integracao` (PHPUnit + MySQL) | 25 | Repositórios, dados de exemplo, endpoints da API (login, CSRF, CRUD, 401, 404, 405, 409, 422 e 429) e páginas |
 | `tests/js` (`node --test`) | 16 | Formatação, máscara de valores, cálculos do simulador, sugestão de categoria, datas e força da senha |
 
 Rodando localmente:
@@ -178,6 +178,7 @@ Rodando localmente:
 ```bash
 docker compose run --rm testes     # PHPUnit contra um MySQL de testes
 npm test                           # testes do JavaScript (Node 22 ou mais novo)
+composer analisar                  # análise estática com PHPStan
 ```
 
 ## 7. Artefato: imagem Docker
@@ -239,9 +240,10 @@ Toda configuração fica fora do código, em variáveis de ambiente (lidas do am
 ## 10. Segurança
 
 - **Nenhum segredo no repositório:** o `.env` está no `.gitignore` e o `.env.example` só tem valores de exemplo. A senha do MySQL de testes do CI fica no GitHub Secrets (`MYSQL_SENHA_TESTES`), e a publicação no GHCR usa o `GITHUB_TOKEN` automático.
-- **Verificações automáticas no CI:** `composer audit`, Gitleaks em todo o histórico, Trivy na imagem (vulnerabilidade crítica com correção bloqueia o pipeline) e Dependabot mensal para Composer, actions e imagem base.
-- **Na aplicação:** senhas com `password_hash` (bcrypt) e nunca devolvidas pela API; consultas preparadas do PDO em todo acesso ao banco; texto sempre escapado nas páginas (`htmlspecialchars` no PHP, `textContent` no JavaScript); token CSRF em toda alteração; cookie de sessão HttpOnly e SameSite; id de sessão renovado no login; espera de 300 ms em cada login errado; e cabeçalhos `Content-Security-Policy`, `X-Frame-Options`, `X-Content-Type-Options` e `Referrer-Policy`.
-- **Na imagem:** Apache rodando como `www-data` (sem root) na porta 8080, sem ferramentas de compilação, `expose_php` e assinatura do servidor desligadas, e só o código necessário (`.dockerignore`).
+- **Verificações automáticas no CI:** `composer audit`, Gitleaks em todo o histórico, Trivy na imagem (vulnerabilidade crítica com correção bloqueia o pipeline), zizmor nos workflows, hadolint no Dockerfile, PHPStan no código e Dependabot mensal para Composer, actions e imagem base.
+- **Cadeia de suprimentos do pipeline:** toda action está fixada pelo SHA do commit (uma tag pode ser trocada por código malicioso, como aconteceu com a `trivy-action` em 2026), cada job recebe só as permissões que usa, o checkout não deixa o token gravado no disco e a release é construída sem cache.
+- **Na aplicação:** senhas com `password_hash` (bcrypt) e nunca devolvidas pela API; consultas preparadas do PDO em todo acesso ao banco; texto sempre escapado nas páginas (`htmlspecialchars` no PHP, `textContent` no JavaScript); token CSRF em toda alteração; cookie de sessão HttpOnly e SameSite; id de sessão renovado no login; login bloqueado por 15 minutos depois de 5 senhas erradas do mesmo e-mail e IP (ou 20 do mesmo IP), com resposta 429 e `Retry-After`; células do CSV exportado que começam com `=`, `+`, `-` ou `@` neutralizadas (injeção de fórmula no Excel); e cabeçalhos `Content-Security-Policy`, `X-Frame-Options`, `X-Content-Type-Options` e `Referrer-Policy`.
+- **Na imagem:** imagem base fixada pelo digest, Apache rodando como `www-data` (sem root) na porta 8080, sem ferramentas de compilação, `expose_php` e assinatura do servidor desligadas, e só o código necessário (`.dockerignore`).
 
 Juntas, essas práticas impedem que uma senha vaze pelo Git, que uma dependência vulnerável chegue à produção sem aviso e que os ataques mais comuns em sistemas web (SQL injection, XSS, CSRF e roubo de sessão) funcionem.
 

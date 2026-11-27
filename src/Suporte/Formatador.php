@@ -41,7 +41,7 @@ final class Formatador
     public static function mesAno(string $anoMes): string
     {
         $partes = explode('-', $anoMes);
-        $ano = (int) ($partes[0] ?? 0);
+        $ano = (int) $partes[0];
         $mes = (int) ($partes[1] ?? 1);
         return self::capitalizar(self::nomeMes($mes)) . ' de ' . $ano;
     }

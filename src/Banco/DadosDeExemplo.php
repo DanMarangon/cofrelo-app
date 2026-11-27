@@ -271,7 +271,11 @@ final class DadosDeExemplo
         ]);
     }
 
-    /** Calcula o saldo inicial de cada conta para que o saldo de hoje fique igual ao planejado. */
+    /**
+     * Calcula o saldo inicial de cada conta para que o saldo de hoje fique igual ao planejado.
+     *
+     * @param array<string, int> $contas ids das contas por apelido
+     */
     private function ajustarSaldosIniciais(array $contas): void
     {
         $movimento = $this->pdo->prepare(

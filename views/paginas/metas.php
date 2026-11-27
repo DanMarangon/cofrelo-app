@@ -94,8 +94,8 @@
     </div>
 </section>
 
-<div class="fundo-modal" id="modal-meta" hidden>
-    <form class="modal modal-pequeno" id="formulario-meta" role="dialog" aria-modal="true" aria-labelledby="mm-titulo" novalidate>
+<div class="fundo-modal" id="modal-meta" role="dialog" aria-modal="true" aria-labelledby="mm-titulo" hidden>
+    <form class="modal modal-pequeno" id="formulario-meta" novalidate>
         <div class="modal-cabecalho">
             <div>
                 <h2 id="mm-titulo">Criar nova meta</h2>

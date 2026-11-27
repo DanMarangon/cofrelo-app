@@ -13,7 +13,13 @@ final class Relogio
 
     public static function hoje(): DateTimeImmutable
     {
-        return self::$fixo ?? new DateTimeImmutable('today');
+        return self::$fixo?->setTime(0, 0) ?? new DateTimeImmutable('today');
+    }
+
+    /** Data e hora de agora (os testes podem fixar também a hora, como em '2026-11-26 10:00:00'). */
+    public static function agora(): DateTimeImmutable
+    {
+        return self::$fixo ?? new DateTimeImmutable('now');
     }
 
     public static function fixar(?string $data): void

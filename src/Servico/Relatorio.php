@@ -145,7 +145,11 @@ final class Relatorio
         return $resultado;
     }
 
-    /** Relatório em CSV (abre direto no Excel em português, com ponto e vírgula). */
+    /**
+     * Relatório em CSV (abre direto no Excel em português, com ponto e vírgula).
+     *
+     * @param array<string, mixed> $relatorio resultado de montar()
+     */
     public static function paraCsv(array $relatorio): string
     {
         $linhas = [['Relatório do Cofrelo'], ['Período', Formatador::data($relatorio['periodo']['inicio']) . ' a ' . Formatador::data($relatorio['periodo']['fim'])], []];
@@ -173,12 +177,29 @@ final class Relatorio
         return self::montarCsv($linhas);
     }
 
+    /**
+     * Protege contra injeção de fórmula (CSV injection): o Excel executaria uma célula de texto que começa
+     * com =, +, -, @, tabulação ou quebra de linha. Essas células ganham um apóstrofo na frente; números
+     * negativos, como -1.234,56, continuam números.
+     */
+    public static function celulaSegura(string $valor): string
+    {
+        if ($valor === '' || !in_array($valor[0], ['=', '+', '-', '@', "\t", "\r"], true)) {
+            return $valor;
+        }
+        if (preg_match('/^-?(\d{1,3}(\.\d{3})*|\d+)(,\d+)?$/', $valor) === 1) {
+            return $valor;
+        }
+        return "'" . $valor;
+    }
+
     /** @param array<int, array<int, string>> $linhas */
     public static function montarCsv(array $linhas): string
     {
         $saida = fopen('php://temp', 'r+');
         foreach ($linhas as $linha) {
-            fputcsv($saida, $linha, ';', '"', '\\');
+            $celulas = array_map(static fn (mixed $celula): string => self::celulaSegura((string) $celula), $linha);
+            fputcsv($saida, $celulas, ';', '"', '\\');
         }
         rewind($saida);
         $conteudo = (string) stream_get_contents($saida);

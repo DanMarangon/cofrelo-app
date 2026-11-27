@@ -15,7 +15,10 @@ final class ValidadorCadastros
 {
     public const ICONES_META = ['alvo', 'grafico', 'carteira', 'casa', 'aviao', 'carro', 'presente', 'estudo'];
 
-    /** @return array{0: array<string, string>, 1: array<string, mixed>} */
+    /**
+     * @return array{0: array<string, string>, 1: array<string, mixed>}
+     * @param array<string, mixed> $dados
+     */
     public function conta(array $dados): array
     {
         $erros = [];
@@ -43,7 +46,10 @@ final class ValidadorCadastros
         ]];
     }
 
-    /** @return array{0: array<string, string>, 1: array<string, mixed>} */
+    /**
+     * @return array{0: array<string, string>, 1: array<string, mixed>}
+     * @param array<string, mixed> $dados
+     */
     public function meta(array $dados, DateTimeImmutable $hoje, bool $nova = true): array
     {
         $erros = [];
@@ -88,7 +94,12 @@ final class ValidadorCadastros
         ]];
     }
 
-    /** "Guardar dinheiro" numa meta. @return array{0: array<string, string>, 1: array{valor: float, data: string}} */
+    /**
+     * "Guardar dinheiro" numa meta.
+     *
+     * @return array{0: array<string, string>, 1: array{valor: float, data: string}}
+     * @param array<string, mixed> $dados
+     */
     public function deposito(array $dados, DateTimeImmutable $hoje): array
     {
         $erros = [];
@@ -103,7 +114,10 @@ final class ValidadorCadastros
         return [$erros, ['valor' => round($valor ?? 0, 2), 'data' => ($data ?? $hoje)->format('Y-m-d')]];
     }
 
-    /** @return array{0: array<string, string>, 1: array<string, mixed>} */
+    /**
+     * @return array{0: array<string, string>, 1: array<string, mixed>}
+     * @param array<string, mixed> $dados
+     */
     public function assinatura(array $dados): array
     {
         $erros = [];
@@ -132,7 +146,12 @@ final class ValidadorCadastros
         ]];
     }
 
-    /** Cadastro e perfil do usuário. @return array{0: array<string, string>, 1: array<string, mixed>} */
+    /**
+     * Cadastro e perfil do usuário.
+     *
+     * @return array{0: array<string, string>, 1: array<string, mixed>}
+     * @param array<string, mixed> $dados
+     */
     public function usuario(array $dados, bool $exigirSenha): array
     {
         $erros = [];
@@ -155,7 +174,11 @@ final class ValidadorCadastros
         return [$erros, ['nome' => $nome, 'email' => $email, 'senha' => $senha, 'orcamento_mensal' => round($orcamento ?? 0, 2)]];
     }
 
-    /** RN01: senha com pelo menos 8 caracteres, misturando letras e números. @return array<string, string> */
+    /**
+     * RN01: senha com pelo menos 8 caracteres, misturando letras e números.
+     *
+     * @return array<string, string>
+     */
     public static function senha(string $senha, string $confirmacao): array
     {
         if (mb_strlen($senha) < 8 || preg_match('/[A-Za-z]/', $senha) !== 1 || preg_match('/\d/', $senha) !== 1) {

@@ -1,5 +1,5 @@
-<div class="fundo-modal" id="modal-deposito" hidden>
-    <form class="modal modal-pequeno" id="formulario-deposito" role="dialog" aria-modal="true" aria-labelledby="md-titulo" novalidate>
+<div class="fundo-modal" id="modal-deposito" role="dialog" aria-modal="true" aria-labelledby="md-titulo" hidden>
+    <form class="modal modal-pequeno" id="formulario-deposito" novalidate>
         <div class="modal-cabecalho">
             <div>
                 <h2 id="md-titulo">Guardar dinheiro</h2>

@@ -1,0 +1,10 @@
+# Análise estática do PHP (roda no CI e com `composer analisar`).
+parameters:
+    level: 6
+    paths:
+        - src
+        - bin
+        - public/index.php
+        - tests
+    bootstrapFiles:
+        - tests/phpstan-bootstrap.php

@@ -25,6 +25,8 @@ spl_autoload_register(static function (string $classe): void {
     }
 });
 
+require __DIR__ . '/Suporte/ajudantes.php';
+
 // Nos testes a configuração vem só das variáveis de ambiente, para nunca usar o banco do .env por engano.
 if (getenv('APP_ENV') !== 'testing') {
     Cofrelo\Config::carregar(COFRELO_RAIZ . '/.env');

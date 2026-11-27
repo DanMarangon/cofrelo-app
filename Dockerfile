@@ -3,8 +3,12 @@
 # ---------------------------------------------------------------------------------------------
 # Base comum: PHP 8.3 com Apache e as extensões usadas pelo Cofrelo.
 # ---------------------------------------------------------------------------------------------
-FROM php:8.3-apache AS base
+# Imagem base fixada pelo digest: o build sempre parte da mesma imagem que passou nos testes.
+# O Dependabot abre um Pull Request por mês quando sai uma versão nova (com correções de segurança).
+FROM php:8.3-apache@sha256:28e8ffe3a7265b554113c252d42f1367edcc7f2d4d925f87c31b8529e1e58fcd AS base
 
+# $PHPIZE_DEPS é uma lista de pacotes e precisa ser separada em palavras, por isso fica sem aspas.
+# hadolint ignore=SC2086
 RUN set -eux; \
     apt-get update; \
     apt-get install -y --no-install-recommends $PHPIZE_DEPS; \

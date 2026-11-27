@@ -14,7 +14,10 @@ final class ValidadorTransacaoTest extends TestCase
     private const CONTAS = [1, 2, 3];
     private const CATEGORIAS = [10 => 'despesa', 20 => 'receita'];
 
-    /** @param array<string, mixed> $alteracoes */
+    /**
+     * @param array<string, mixed> $alteracoes
+     * @return array<string, mixed>
+     */
     private function dados(array $alteracoes = []): array
     {
         return array_merge([
@@ -29,7 +32,10 @@ final class ValidadorTransacaoTest extends TestCase
         ], $alteracoes);
     }
 
-    /** @return array{0: array<string, string>, 1: array<string, mixed>} */
+    /**
+     * @return array{0: array<string, string>, 1: array<string, mixed>}
+     * @param array<string, mixed> $dados
+     */
     private function validar(array $dados): array
     {
         return (new ValidadorTransacao())->validar($dados, self::CONTAS, self::CATEGORIAS, new DateTimeImmutable('2026-11-26'));

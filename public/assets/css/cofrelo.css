@@ -18,7 +18,7 @@
   --lima: #DBEEA3;
   --verde-apoio: #8CB79C;
   --texto: #182D26;
-  --texto-2: #758079;
+  --texto-2: #616A64; /* #758079 do protótipo, escurecido para contraste AA (4,6:1 ou mais) */
   --fundo: #F2F6F0;
   --divisoria: #E6EBE5;
   --superficie: #FFFFFF;
@@ -63,6 +63,8 @@ body {
 h1, h2, h3, h4, p { margin: 0; }
 a { color: var(--verde); text-decoration: none; }
 a:hover { text-decoration: underline; }
+/* Link no meio de um texto precisa de outra pista além da cor (WCAG 1.4.1). */
+p a { text-decoration: underline; text-underline-offset: 0.15em; }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 img, svg { display: block; }
@@ -312,7 +314,7 @@ img, svg { display: block; }
   display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: var(--raio-sm);
   font-size: 12px; font-weight: 600; background: var(--verde-claro); color: var(--verde); white-space: nowrap;
 }
-.etiqueta.pendente { background: var(--ambar-claro); color: #9A6A06; }
+.etiqueta.pendente { background: var(--ambar-claro); color: #916406; }
 .etiqueta.neutra { background: var(--fundo); color: var(--texto-2); }
 .etiqueta.assinatura { background: #F7E8F1; color: #A04677; }
 
@@ -589,7 +591,7 @@ kbd { display: inline-block; min-width: 26px; padding: 3px 7px; border: 1px soli
 .acesso-numeros { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; max-width: 520px; }
 .acesso-numeros div { padding: 16px; border-radius: var(--raio-card); background: rgba(255, 255, 255, 0.08); }
 .acesso-numeros strong { display: block; color: var(--lima); font-size: 20px; font-weight: 700; }
-.acesso-numeros span { font-size: 12px; color: rgba(255, 255, 255, 0.78); }
+.acesso-numeros span { font-size: 12px; color: rgba(255, 255, 255, 0.93); }
 .acesso-formulario { display: grid; place-items: center; padding: 48px 24px; }
 .acesso-formulario .caixa { width: min(400px, 100%); display: flex; flex-direction: column; gap: 22px; }
 .acesso-formulario h2 { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; }

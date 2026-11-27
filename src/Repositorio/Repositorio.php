@@ -16,7 +16,10 @@ abstract class Repositorio
     {
     }
 
-    /** @return array<int, array<string, mixed>> */
+    /**
+     * @return array<int, array<string, mixed>>
+     * @param array<string, mixed> $parametros
+     */
     protected function linhas(string $sql, array $parametros = []): array
     {
         $consulta = $this->pdo->prepare($sql);
@@ -24,7 +27,10 @@ abstract class Repositorio
         return $consulta->fetchAll();
     }
 
-    /** @return array<string, mixed>|null */
+    /**
+     * @return array<string, mixed>|null
+     * @param array<string, mixed> $parametros
+     */
     protected function linha(string $sql, array $parametros = []): ?array
     {
         $consulta = $this->pdo->prepare($sql);
@@ -33,6 +39,7 @@ abstract class Repositorio
         return $linha === false ? null : $linha;
     }
 
+    /** @param array<string, mixed> $parametros */
     protected function valor(string $sql, array $parametros = []): mixed
     {
         $consulta = $this->pdo->prepare($sql);
@@ -40,6 +47,7 @@ abstract class Repositorio
         return $consulta->fetchColumn();
     }
 
+    /** @param array<string, mixed> $parametros */
     protected function executar(string $sql, array $parametros = []): int
     {
         $consulta = $this->pdo->prepare($sql);

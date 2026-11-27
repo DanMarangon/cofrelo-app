@@ -40,8 +40,8 @@
     <ul class="lista-simples" id="lista-transferencias"></ul>
 </section>
 
-<div class="fundo-modal" id="modal-conta" hidden>
-    <form class="modal modal-pequeno" id="formulario-conta" role="dialog" aria-modal="true" aria-labelledby="mco-titulo" novalidate>
+<div class="fundo-modal" id="modal-conta" role="dialog" aria-modal="true" aria-labelledby="mco-titulo" hidden>
+    <form class="modal modal-pequeno" id="formulario-conta" novalidate>
         <div class="modal-cabecalho">
             <div>
                 <h2 id="mco-titulo">Adicionar conta</h2>

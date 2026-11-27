@@ -78,7 +78,7 @@ final class Sessao
     public static function exigirCsrf(Requisicao $requisicao): void
     {
         $enviado = $requisicao->cabecalho('x-csrf-token') ?? (string) ($requisicao->corpo['_csrf'] ?? '');
-        if (!is_string($enviado) || !hash_equals(self::tokenCsrf(), $enviado)) {
+        if (!hash_equals(self::tokenCsrf(), $enviado)) {
             throw ErroHttp::proibido('Sua sessão expirou ou a página está desatualizada. Recarregue e tente de novo.');
         }
     }
@@ -97,7 +97,11 @@ final class Sessao
         return is_array($avisos) ? $avisos : [];
     }
 
-    /** Guarda o que foi digitado para preencher de novo o formulário depois de um erro. */
+    /**
+     * Guarda o que foi digitado para preencher de novo o formulário depois de um erro.
+     *
+     * @param array<string, mixed> $campos
+     */
     public static function lembrar(array $campos): void
     {
         $_SESSION['antigos'] = $campos;

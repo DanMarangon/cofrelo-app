@@ -24,7 +24,7 @@ final class AutenticacaoControlador extends Controlador
     {
         $email = (string) ($requisicao->corpo['email'] ?? '');
         $senha = (string) ($requisicao->corpo['senha'] ?? '');
-        $usuario = $this->autenticacao()->entrar($email, $senha);
+        $usuario = $this->autenticacao()->entrar($email, $senha, $requisicao->ip);
         if ($usuario === null) {
             throw new ErroHttp(401, 'E-mail ou senha incorretos.');
         }

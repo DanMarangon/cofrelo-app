@@ -106,6 +106,9 @@ final class Aplicacao
             $resposta = ($encontrada['acao'])($requisicao);
         } catch (ErroHttp $erro) {
             $resposta = $this->respostaDeErro($requisicao, $erro->status, $erro->getMessage(), $erro->campos);
+            foreach ($erro->cabecalhos as $nome => $valor) {
+                $resposta = $resposta->comCabecalho($nome, $valor);
+            }
         } catch (\PDOException $erro) {
             Log::erro('banco.erro', ['mensagem' => $erro->getMessage(), 'codigo' => $erro->getCode()]);
             $resposta = $this->respostaDeErro($requisicao, 503, 'O banco de dados não respondeu. Tente de novo em instantes.');
@@ -120,7 +123,11 @@ final class Aplicacao
         return [CabecalhosSeguranca::aplicar($resposta), $rota];
     }
 
-    /** Erro em JSON para a API e em página HTML para o navegador. @param array<string, string> $campos */
+    /**
+     * Erro em JSON para a API e em página HTML para o navegador.
+     *
+     * @param array<string, string> $campos
+     */
     private function respostaDeErro(Requisicao $requisicao, int $status, string $mensagem, array $campos = []): Resposta
     {
         $aceitaHtml = str_contains((string) $requisicao->cabecalho('accept'), 'text/html');

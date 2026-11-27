@@ -1,6 +1,6 @@
 <?php /* Modal de nova transação. A aba "Assinatura" atende ao comentário do protótipo e substitui a antiga tela de assinaturas. */ ?>
-<div class="fundo-modal" id="modal-transacao" hidden>
-    <form class="modal" id="formulario-transacao" role="dialog" aria-modal="true" aria-labelledby="mt-titulo" novalidate>
+<div class="fundo-modal" id="modal-transacao" role="dialog" aria-modal="true" aria-labelledby="mt-titulo" hidden>
+    <form class="modal" id="formulario-transacao" novalidate>
         <div class="modal-cabecalho">
             <div>
                 <h2 id="mt-titulo">Nova transação</h2>

@@ -69,7 +69,7 @@
     </div>
 
     <div id="painel-tabela">
-        <div class="tabela-area">
+        <div class="tabela-area" tabindex="0" role="region" aria-label="Tabela de transações">
             <table class="tabela" id="tabela-transacoes">
                 <thead>
                     <tr>
@@ -97,8 +97,8 @@
     </div>
 </section>
 
-<div class="fundo-modal" id="modal-assinatura" hidden>
-    <form class="modal modal-pequeno" id="formulario-assinatura" role="dialog" aria-modal="true" aria-labelledby="ma-titulo" novalidate>
+<div class="fundo-modal" id="modal-assinatura" role="dialog" aria-modal="true" aria-labelledby="ma-titulo" hidden>
+    <form class="modal modal-pequeno" id="formulario-assinatura" novalidate>
         <div class="modal-cabecalho">
             <div>
                 <h2 id="ma-titulo">Editar assinatura</h2>

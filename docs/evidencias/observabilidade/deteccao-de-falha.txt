@@ -1,0 +1,24 @@
+[06:21:13] Antes da falha: GET /health -> 200 {"status":"ok","versao":"1.1.0","commit":"f0f17e5c8da1","ambiente":"production","banco":"ok","tempo_resposta_ms":1.6,"verificado_em":"2026-11-27T06:21:13-03:00"}
+[06:21:13] Alertas ativos no Prometheus: ['CofreloForaDoAr (pending)', 'MuitosErrosInternos (firing)']
+
+[06:21:13] Simulando a falha: docker compose stop banco
+[06:21:15] Container cofrelo-banco-1 Stopping  |  Container cofrelo-banco-1 Stopped
+[06:21:22] GET /health -> 503 {"status":"falha","versao":"1.1.0","commit":"f0f17e5c8da1","ambiente":"production","banco":"indisponivel","tempo_resposta_ms":3290.7,"verificado_em":"2026-11-27T06:21:22-03:00"}
+
+[06:21:22] Esperando o Docker marcar o container como unhealthy (3 verificações seguidas falhando)...
+[06:21:58] docker compose ps app -> cofrelo-app-1 Up About a minute (unhealthy)
+
+[06:21:58] Linhas do log da aplicação com o erro (docker compose logs app):
+    {"ts":"2026-11-27T06:21:18-03:00","nivel":"erro","evento":"saude.falha","requisicao":"554d1ac070137d5c","status":"falha","versao":"1.1.0","commit":"f0f17e5c8da1","ambiente":"production","banco":"indisponivel","tempo_resposta_ms":3330.3,"verificado_em":"2026-11-27T06:21:18-03:00"}
+    {"ts":"2026-11-27T06:21:20-03:00","nivel":"erro","evento":"saude.falha","requisicao":"4a497063db89468e","status":"falha","versao":"1.1.0","commit":"f0f17e5c8da1","ambiente":"production","banco":"indisponivel","tempo_resposta_ms":3331.5,"verificado_em":"2026-11-27T06:21:20-03:00"}
+    {"ts":"2026-11-27T06:21:22-03:00","nivel":"erro","evento":"saude.falha","requisicao":"737e567c45e003e2","status":"falha","versao":"1.1.0","commit":"f0f17e5c8da1","ambiente":"production","banco":"indisponivel","tempo_resposta_ms":3290.7,"verificado_em":"2026-11-27T06:21:22-03:00"}
+    {"ts":"2026-11-27T06:21:38-03:00","nivel":"erro","evento":"saude.falha","requisicao":"fdddea68554b22dd","status":"falha","versao":"1.1.0","commit":"f0f17e5c8da1","ambiente":"production","banco":"indisponivel","tempo_resposta_ms":3308,"verificado_em":"2026-11-27T06:21:38-03:00"}
+
+[06:21:58] Esperando o Prometheus disparar o alerta BancoIndisponivel (regra com for: 30s)...
+[06:22:03] Alertas no Prometheus: ['BancoIndisponivel (firing)', 'MuitosErrosInternos (firing)']
+[06:22:17] Capturas da tela durante a falha: falha-prometheus-alertas.png, falha-prometheus-alvos.png, falha-prometheus-banco-disponivel.png, falha-grafana-painel.png
+
+[06:22:17] Recuperando: docker compose start banco
+[06:22:17] Container cofrelo-banco-1 Starting  |  Container cofrelo-banco-1 Started
+[06:22:20] GET /health -> 200 {"status":"ok","versao":"1.1.0","commit":"f0f17e5c8da1","ambiente":"production","banco":"ok","tempo_resposta_ms":1.2,"verificado_em":"2026-11-27T06:22:20-03:00"}
+[06:22:50] Alertas ativos no Prometheus: ['MuitosErrosInternos (firing)']

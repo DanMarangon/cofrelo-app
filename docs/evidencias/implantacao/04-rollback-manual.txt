@@ -1,0 +1,43 @@
+PS> .\scripts\implantar.ps1 -Voltar
+# 27/11/2026 06:20:46
+[06:20:46] Rollback manual pedido: voltando para a versão 1.0.0.
+[06:20:46] Versão em execução: 1.1.0. Versão pedida: 1.0.0.
+[06:20:46] A imagem ghcr.io/danmarangon/cofrelo-app:1.0.0 já está neste computador.
+[06:20:46] Trocando o container pela versão 1.0.0 (estratégia recreate)...
+[06:20:47]    Container cofrelo-banco-1 Running 
+[06:20:47]    Container cofrelo-app-1 Recreate 
+[06:20:50]    Container cofrelo-app-1 Recreated 
+[06:20:50]    Container cofrelo-banco-1 Waiting 
+[06:20:51]    Container cofrelo-banco-1 Healthy 
+[06:20:51]    Container cofrelo-app-1 Starting 
+[06:20:51]    Container cofrelo-app-1 Started 
+[06:20:53] Implantação concluída: versão 1.0.0, commit 85233456ba4f, banco ok.
+# código de saída: 0
+
+PS> .\scripts\implantar.ps1 -Situacao
+# 27/11/2026 06:20:53
+[06:20:53] Versão registrada: 1.0.0 (anterior: 1.1.0)
+[06:20:53] Health: status=ok, versão=1.0.0, commit=85233456ba4f, banco=ok
+# código de saída: 0
+
+PS> .\scripts\implantar.ps1 -Versao 1.1.0
+# 27/11/2026 06:20:53
+[06:20:53] Versão em execução: 1.0.0. Versão pedida: 1.1.0.
+[06:20:53] A imagem ghcr.io/danmarangon/cofrelo-app:1.1.0 já está neste computador.
+[06:20:53] Trocando o container pela versão 1.1.0 (estratégia recreate)...
+[06:20:53]    Container cofrelo-banco-1 Running 
+[06:20:53]    Container cofrelo-app-1 Recreate 
+[06:20:56]    Container cofrelo-app-1 Recreated 
+[06:20:56]    Container cofrelo-banco-1 Waiting 
+[06:20:57]    Container cofrelo-banco-1 Healthy 
+[06:20:57]    Container cofrelo-app-1 Starting 
+[06:20:57]    Container cofrelo-app-1 Started 
+[06:20:59] Implantação concluída: versão 1.1.0, commit f0f17e5c8da1, banco ok.
+# código de saída: 0
+
+PS> .\scripts\implantar.ps1 -Situacao
+# 27/11/2026 06:20:59
+[06:20:59] Versão registrada: 1.1.0 (anterior: 1.0.0)
+[06:20:59] Health: status=ok, versão=1.1.0, commit=f0f17e5c8da1, banco=ok
+# código de saída: 0
+

@@ -17,6 +17,8 @@
 /storage/logs/*
 !/storage/logs/.gitkeep
 /docs/.cache/
+/docs/entregas/*.zip
+__pycache__/
 *.log
 
 # Sistema operacional e editores

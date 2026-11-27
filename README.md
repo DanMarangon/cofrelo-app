@@ -47,7 +47,7 @@ Funcionalidades principais:
 - **Transações** com filtros (busca por descrição ou valor, categoria, conta e período escolhido num calendário), abas por tipo, ordenação, paginação, edição, exclusão e exportação em CSV.
 - **Assinaturas**: uma despesa pode virar cobrança mensal. O sistema lança a cobrança sozinho em cada mês e avisa antes de ela acontecer.
 - **Minhas contas**: patrimônio, saldo de cada conta e transferências entre elas.
-- **Metas e objetivos**: progresso, "guardar dinheiro" e um simulador que calcula quanto guardar por mês, com rendimento.
+- **Metas e objetivos**: progresso, "guardar dinheiro", previsão de conclusão no ritmo dos últimos 3 meses e um simulador que calcula quanto guardar por mês, com rendimento.
 - **Relatórios**: evolução mensal, comparação por categoria com o mês anterior, taxa de economia e um mapa de gastos diários no estilo do calendário do GitHub.
 - **Notificações** de contas pendentes, cobranças chegando, orçamento quase no fim e metas com prazo próximo.
 - **Configurações** de perfil, orçamento e senha, e **Central de ajuda** com busca.
@@ -165,12 +165,12 @@ Construção, teste, entrega e implantação ficam separados assim:
 
 ## 6. Testes automatizados
 
-77 casos no total, todos rodando no CI. Se qualquer um falhar, o pipeline fica vermelho e a imagem não é publicada.
+81 casos no total, todos rodando no CI. Se qualquer um falhar, o pipeline fica vermelho e a imagem não é publicada.
 
 | Conjunto | Casos | O que cobre |
 |---|---|---|
-| `tests/Unitario` (PHPUnit) | 36 | Validação de transações (RN03 a RN07), cálculo das metas, indicadores, formatação, roteador, limite de tentativas de login e proteção do CSV contra fórmulas |
-| `tests/Integracao` (PHPUnit + MySQL) | 25 | Repositórios, dados de exemplo, endpoints da API (login, CSRF, CRUD, 401, 404, 405, 409, 422 e 429) e páginas |
+| `tests/Unitario` (PHPUnit) | 39 | Validação de transações (RN03 a RN07), cálculo das metas (aporte e previsão), indicadores, formatação, roteador, limite de tentativas de login e proteção do CSV contra fórmulas |
+| `tests/Integracao` (PHPUnit + MySQL) | 26 | Repositórios, dados de exemplo, endpoints da API (login, CSRF, CRUD, previsão das metas, 401, 404, 405, 409, 422 e 429) e páginas |
 | `tests/js` (`node --test`) | 16 | Formatação, máscara de valores, cálculos do simulador, sugestão de categoria, datas e força da senha |
 
 Rodando localmente:
@@ -258,13 +258,26 @@ Como identificar uma falha depois da implantação: o script de implantação j�
 
 ## 12. Evidências do GitHub Actions
 
-Os links das execuções (com sucesso e com falha) e a explicação de cada falha ficam no documento de evidências, em [`docs/entregas`](docs/entregas).
+| Evidência | Execução |
+|---|---|
+| Sucesso na `main` (versão 1.1.0) | [run 45971991589](https://github.com/DanMarangon/cofrelo-app/actions/runs/45971991589) |
+| **Falha controlada** (PR #11, primeiro commit) | [push](https://github.com/DanMarangon/cofrelo-app/actions/runs/45969983018) e [Pull Request](https://github.com/DanMarangon/cofrelo-app/actions/runs/45969991182) |
+| Correção da falha (PR #11, segundo commit) | [run 45970373901](https://github.com/DanMarangon/cofrelo-app/actions/runs/45970373901) |
+| Release 1.0.0: publicação e homologação | [run 45970280748](https://github.com/DanMarangon/cofrelo-app/actions/runs/45970280748) |
+| Release 1.1.0: publicação e homologação | [run 45971999544](https://github.com/DanMarangon/cofrelo-app/actions/runs/45971999544) |
+| Falha real: Gitleaks sem permissão de ler o Pull Request | [run 45911772755](https://github.com/DanMarangon/cofrelo-app/actions/runs/45911772755) |
+| Falha real: tag da action do Trivy que deixou de existir | [run 45915430973](https://github.com/DanMarangon/cofrelo-app/actions/runs/45915430973) |
+
+**A falha controlada:** a previsão de conclusão das metas (versão 1.1.0) foi enviada primeiro com `intdiv($falta, $ritmo)`, uma divisão inteira que arredonda para baixo. O job "Validação e testes" ficou vermelho: o teste `testPrevisaoArredondaParaCimaQuandoSobraUmRestinho` esperava 6 meses e recebeu 5, e o teste de integração das metas esperava 7 e recebeu 6. Como a validação falhou, o job da imagem foi pulado e nenhuma imagem com o erro foi publicada. A correção arredonda para cima (`intdiv($falta + $ritmo - 1, $ritmo)`), o CI voltou a ficar verde e o PR foi mesclado.
+
+As duas falhas reais da tabela foram corrigidas com `pull-requests: read` no job de segurança e, depois, com as actions fixadas pelo SHA do commit. O passo a passo completo, com os logs, está no PDF de evidências (`docs/entregas`).
 
 ## 13. Documentos e como refazer as evidências
 
 A pasta [`docs`](docs) guarda os documentos entregues e as ferramentas que os geram:
 
-- [`docs/entregas`](docs/entregas): documentação do sistema (ABNT), briefing, PDF de evidências de DevOps e slides das apresentações.
+- [`docs/entregas`](docs/entregas): documentação do sistema no padrão ABNT (Word e PDF), briefing, PDF de evidências de DevOps e slides das duas apresentações.
+- [`docs/evidencias`](docs/evidencias): capturas de tela, diagramas, wireframes, logs das implantações e da demonstração de falha, e os dados coletados do GitHub.
 - [`docs/prototipo`](docs/prototipo): telas do protótipo no Figma.
 - [`docs/ferramentas`](docs/ferramentas): scripts que capturam as telas e geram os documentos.
 - [`docs/COMO-REFAZER.md`](docs/COMO-REFAZER.md): passo a passo para gerar de novo as evidências e os documentos.

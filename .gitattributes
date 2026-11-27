@@ -8,3 +8,5 @@
 *.docx binary
 *.pptx binary
 *.pdf binary
+*.zip binary
+*.gz binary

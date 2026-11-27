@@ -1,0 +1,48 @@
+{
+  "_comentario": "Dados usados por todos os geradores de documentos. Depois de alterar, rode: python docs/ferramentas/gerar_tudo.py --so-documentos",
+
+  "projeto": "Cofrelo",
+  "subtitulo": "Aplicação web de finanças pessoais",
+  "instituicao": "Centro Universitário de Brasília – CEUB",
+  "curso": "Ciência da Computação",
+  "cidade": "Brasília",
+  "ano": 2026,
+  "repositorio": "https://github.com/DanMarangon/cofrelo-app",
+  "imagem_docker": "ghcr.io/danmarangon/cofrelo-app",
+  "figma": "",
+
+  "dw": {
+    "disciplina": "Desenvolvimento Web",
+    "turma": "Turma A",
+    "professor": "Valdemir S. Silva",
+    "grupo": "Grupo 2",
+    "integrantes": [
+      { "nome": "Dan Ramos Marques Marangon", "ra": "22502303" },
+      { "nome": "Marcelo Henrique", "ra": "" },
+      { "nome": "Rafael Hideki", "ra": "" },
+      { "nome": "Gustavo Henrique", "ra": "" },
+      { "nome": "Henrique de Figueiredo", "ra": "" }
+    ],
+    "entrega": "30/11/2026, 23:59",
+    "apresentacao": "08/12/2026, 08:40"
+  },
+
+  "devops": {
+    "disciplina": "Integração DevOps",
+    "professor": "Daniel Lim-Apo",
+    "dupla": [
+      { "nome": "Dan Ramos Marques Marangon", "ra": "22502303" },
+      { "nome": "", "ra": "" }
+    ]
+  },
+
+  "cliente_ficticio": {
+    "empresa": "Cofrelo Tecnologia Financeira Ltda.",
+    "contato": "Carla Nogueira, sócia e diretora de produto (personagem fictícia)",
+    "email": "contato@cofrelo.app (fictício)",
+    "telefone": "(61) 3333-0000 (fictício)"
+  },
+
+  "_referencias_extras": "Referências a mais na documentação, no formato ABNT (use **negrito** no título). Ex.: o livro-texto da disciplina, que está no plano de ensino.",
+  "referencias_extras": []
+}

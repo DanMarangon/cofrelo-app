@@ -1,0 +1,1412 @@
+{
+  "coletado_em": "2026-11-27T09:25:20+00:00",
+  "repositorio": "DanMarangon/cofrelo-app",
+  "branches": [
+    "dependabot/github_actions/develop/actions/cache-6.1.0",
+    "dependabot/github_actions/develop/docker/build-push-action-7.4.0",
+    "dependabot/github_actions/develop/mikepenz/action-junit-report-6.7.1",
+    "develop",
+    "docs/readme",
+    "feature/api-rest",
+    "feature/banco-de-dados",
+    "feature/docker",
+    "feature/entrega-continua",
+    "feature/interface",
+    "feature/melhorias-da-revisao",
+    "feature/nucleo",
+    "feature/observabilidade",
+    "feature/previsao-das-metas",
+    "main",
+    "release/1.0.0",
+    "release/1.1.0"
+  ],
+  "tags": [
+    "v1.1.0",
+    "v1.0.0"
+  ],
+  "commits": {
+    "origin/main": 37,
+    "origin/develop": 36
+  },
+  "prs": [
+    {
+      "baseRefName": "develop",
+      "createdAt": "2026-11-26T23:34:47Z",
+      "headRefName": "feature/nucleo",
+      "mergedAt": "2026-11-26T23:46:56Z",
+      "number": 1,
+      "state": "MERGED",
+      "title": "Núcleo do sistema e pipeline de CI",
+      "url": "https://github.com/DanMarangon/cofrelo-app/pull/1",
+      "autor": "DanMarangon"
+    },
+    {
+      "baseRefName": "develop",
+      "createdAt": "2026-11-26T23:47:15Z",
+      "headRefName": "feature/banco-de-dados",
+      "mergedAt": "2026-11-27T00:07:57Z",
+      "number": 2,
+      "state": "MERGED",
+      "title": "Banco de dados MySQL, modelos e repositórios",
+      "url": "https://github.com/DanMarangon/cofrelo-app/pull/2",
+      "autor": "DanMarangon"
+    },
+    {
+      "baseRefName": "develop",
+      "createdAt": "2026-11-27T00:08:02Z",
+      "headRefName": "feature/api-rest",
+      "mergedAt": "2026-11-27T00:09:41Z",
+      "number": 3,
+      "state": "MERGED",
+      "title": "API REST com autenticação, CRUD e painéis",
+      "url": "https://github.com/DanMarangon/cofrelo-app/pull/3",
+      "autor": "DanMarangon"
+    },
+    {
+      "baseRefName": "develop",
+      "createdAt": "2026-11-27T00:09:47Z",
+      "headRefName": "feature/interface",
+      "mergedAt": "2026-11-27T00:12:51Z",
+      "number": 4,
+      "state": "MERGED",
+      "title": "Interface web baseada no protótipo do Figma",
+      "url": "https://github.com/DanMarangon/cofrelo-app/pull/4",
+      "autor": "DanMarangon"
+    },
+    {
+      "baseRefName": "develop",
+      "createdAt": "2026-11-27T00:12:56Z",
+      "headRefName": "feature/docker",
+      "mergedAt": "2026-11-27T00:20:07Z",
+      "number": 5,
+      "state": "MERGED",
+      "title": "Imagem Docker, Docker Compose e publicação no GHCR",
+      "url": "https://github.com/DanMarangon/cofrelo-app/pull/5",
+      "autor": "DanMarangon"
+    },
+    {
+      "baseRefName": "develop",
+      "createdAt": "2026-11-27T00:20:12Z",
+      "headRefName": "feature/observabilidade",
+      "mergedAt": "2026-11-27T00:26:11Z",
+      "number": 6,
+      "state": "MERGED",
+      "title": "Observabilidade com Prometheus, alertas e Grafana",
+      "url": "https://github.com/DanMarangon/cofrelo-app/pull/6",
+      "autor": "DanMarangon"
+    },
+    {
+      "baseRefName": "develop",
+      "createdAt": "2026-11-27T00:26:34Z",
+      "headRefName": "feature/entrega-continua",
+      "mergedAt": "2026-11-27T00:30:06Z",
+      "number": 7,
+      "state": "MERGED",
+      "title": "Entrega contínua: release versionada, homologação e implantação com rollback",
+      "url": "https://github.com/DanMarangon/cofrelo-app/pull/7",
+      "autor": "DanMarangon"
+    },
+    {
+      "baseRefName": "develop",
+      "createdAt": "2026-11-27T00:30:13Z",
+      "headRefName": "docs/readme",
+      "mergedAt": "2026-11-27T08:29:53Z",
+      "number": 8,
+      "state": "MERGED",
+      "title": "README completo do projeto",
+      "url": "https://github.com/DanMarangon/cofrelo-app/pull/8",
+      "autor": "DanMarangon"
+    },
+    {
+      "baseRefName": "develop",
+      "createdAt": "2026-11-27T08:50:18Z",
+      "headRefName": "feature/melhorias-da-revisao",
+      "mergedAt": "2026-11-27T08:55:45Z",
+      "number": 9,
+      "state": "MERGED",
+      "title": "Melhorias da revisão: segurança, acessibilidade e pipeline",
+      "url": "https://github.com/DanMarangon/cofrelo-app/pull/9",
+      "autor": "DanMarangon"
+    },
+    {
+      "baseRefName": "main",
+      "createdAt": "2026-11-27T08:56:07Z",
+      "headRefName": "release/1.0.0",
+      "mergedAt": "2026-11-27T09:01:33Z",
+      "number": 10,
+      "state": "MERGED",
+      "title": "Versão 1.0.0",
+      "url": "https://github.com/DanMarangon/cofrelo-app/pull/10",
+      "autor": "DanMarangon"
+    },
+    {
+      "baseRefName": "develop",
+      "createdAt": "2026-11-27T08:59:36Z",
+      "headRefName": "feature/previsao-das-metas",
+      "mergedAt": "2026-11-27T09:06:36Z",
+      "number": 11,
+      "state": "MERGED",
+      "title": "Previsão de conclusão das metas",
+      "url": "https://github.com/DanMarangon/cofrelo-app/pull/11",
+      "autor": "DanMarangon"
+    },
+    {
+      "baseRefName": "develop",
+      "createdAt": "2026-11-27T09:02:25Z",
+      "headRefName": "release/1.0.0",
+      "mergedAt": "2026-11-27T09:06:32Z",
+      "number": 12,
+      "state": "MERGED",
+      "title": "Leva a versão 1.0.0 de volta para a develop",
+      "url": "https://github.com/DanMarangon/cofrelo-app/pull/12",
+      "autor": "DanMarangon"
+    },
+    {
+      "baseRefName": "develop",
+      "createdAt": "2026-11-27T09:02:28Z",
+      "headRefName": "dependabot/github_actions/develop/mikepenz/action-junit-report-6.7.1",
+      "mergedAt": null,
+      "number": 13,
+      "state": "OPEN",
+      "title": "chore(deps): Bump mikepenz/action-junit-report from 5.6.2 to 6.7.1",
+      "url": "https://github.com/DanMarangon/cofrelo-app/pull/13",
+      "autor": "app/dependabot"
+    },
+    {
+      "baseRefName": "develop",
+      "createdAt": "2026-11-27T09:02:32Z",
+      "headRefName": "dependabot/github_actions/develop/docker/build-push-action-7.4.0",
+      "mergedAt": null,
+      "number": 14,
+      "state": "OPEN",
+      "title": "chore(deps): Bump docker/build-push-action from 6.19.2 to 7.4.0",
+      "url": "https://github.com/DanMarangon/cofrelo-app/pull/14",
+      "autor": "app/dependabot"
+    },
+    {
+      "baseRefName": "develop",
+      "createdAt": "2026-11-27T09:02:37Z",
+      "headRefName": "dependabot/github_actions/develop/actions/cache-6.1.0",
+      "mergedAt": null,
+      "number": 15,
+      "state": "OPEN",
+      "title": "chore(deps): Bump actions/cache from 4.3.0 to 6.1.0",
+      "url": "https://github.com/DanMarangon/cofrelo-app/pull/15",
+      "autor": "app/dependabot"
+    },
+    {
+      "baseRefName": "main",
+      "createdAt": "2026-11-27T09:06:57Z",
+      "headRefName": "release/1.1.0",
+      "mergedAt": "2026-11-27T09:13:59Z",
+      "number": 16,
+      "state": "MERGED",
+      "title": "Versão 1.1.0",
+      "url": "https://github.com/DanMarangon/cofrelo-app/pull/16",
+      "autor": "DanMarangon"
+    },
+    {
+      "baseRefName": "develop",
+      "createdAt": "2026-11-27T09:14:06Z",
+      "headRefName": "release/1.1.0",
+      "mergedAt": "2026-11-27T09:19:00Z",
+      "number": 17,
+      "state": "MERGED",
+      "title": "Leva a versão 1.1.0 de volta para a develop",
+      "url": "https://github.com/DanMarangon/cofrelo-app/pull/17",
+      "autor": "DanMarangon"
+    }
+  ],
+  "resumo_ci": {
+    "total": 56,
+    "sucesso": 40,
+    "falha": 11,
+    "cancelada": 5
+  },
+  "destaques": {
+    "sucesso_main": {
+      "conclusion": "success",
+      "createdAt": "2026-11-27T09:14:02Z",
+      "databaseId": 45971991589,
+      "displayTitle": "Versão 1.1.0",
+      "event": "push",
+      "headBranch": "main",
+      "headSha": "f0f17e5c8da1468a1ab1f83e2f69c9c4a2d8f235",
+      "status": "completed",
+      "updatedAt": "2026-11-27T09:17:24Z",
+      "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45971991589",
+      "workflowName": "CI",
+      "jobs": [
+        {
+          "nome": "Verificações de segurança",
+          "conclusao": "success",
+          "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45971991589/job/140414387374",
+          "passos": [
+            {
+              "nome": "Set up job",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Obter o código com todo o histórico",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Preparar o PHP 8.3",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Dependências com vulnerabilidades conhecidas (composer audit)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Senhas e chaves esquecidas no código (Gitleaks)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Segurança dos workflows do GitHub Actions (zizmor)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Boas práticas do Dockerfile (hadolint)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Obter o código com todo o histórico",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Complete job",
+              "conclusao": "success"
+            }
+          ]
+        },
+        {
+          "nome": "Validação e testes",
+          "conclusao": "success",
+          "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45971991589/job/140414387798",
+          "passos": [
+            {
+              "nome": "Set up job",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Initialize containers",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Obter o código",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Preparar o PHP 8.3",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Validar o composer.json",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Localizar o cache do Composer",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Reaproveitar downloads do Composer",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Instalar as dependências",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Verificar a sintaxe de todos os arquivos PHP",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Análise estática do PHP (PHPStan, nível 6)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Preparar o Node.js",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Testes do JavaScript",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Testes do PHP (PHPUnit, unitários e de integração com MySQL)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Publicar o resultado dos testes",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Guardar os relatórios de teste",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Preparar o Node.js",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Reaproveitar downloads do Composer",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Obter o código",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Stop containers",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Complete job",
+              "conclusao": "success"
+            }
+          ]
+        },
+        {
+          "nome": "Resultado dos testes",
+          "conclusao": "success",
+          "url": "https://github.com/DanMarangon/cofrelo-app/runs/140414810841",
+          "passos": []
+        },
+        {
+          "nome": "Imagem Docker",
+          "conclusao": "success",
+          "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45971991589/job/140414848114",
+          "passos": [
+            {
+              "nome": "Set up job",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Obter o código",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Definir as tags da imagem (branch e commit)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Preparar o Docker Buildx",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Construir a imagem de produção",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Testar a imagem com um MySQL de verdade",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Mostrar o log da aplicação se o teste falhar",
+              "conclusao": "skipped"
+            },
+            {
+              "nome": "Vulnerabilidades da imagem (Trivy, relatório completo)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Vulnerabilidades críticas com correção bloqueiam o pipeline (Trivy)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Publicar no GitHub Container Registry",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Resumo da imagem",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Vulnerabilidades críticas com correção bloqueiam o pipeline (Trivy)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Vulnerabilidades da imagem (Trivy, relatório completo)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Construir a imagem de produção",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Preparar o Docker Buildx",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Obter o código",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Complete job",
+              "conclusao": "success"
+            }
+          ]
+        }
+      ]
+    },
+    "sucesso_develop": {
+      "conclusion": "success",
+      "createdAt": "2026-11-27T09:19:02Z",
+      "databaseId": 45972687010,
+      "displayTitle": "Merge do PR #17: versão 1.1.0 de volta para a develop",
+      "event": "push",
+      "headBranch": "develop",
+      "headSha": "bd7b4e8e7924257500e2ef9290975b0adff1acd9",
+      "status": "completed",
+      "updatedAt": "2026-11-27T09:21:56Z",
+      "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45972687010",
+      "workflowName": "CI"
+    },
+    "falha_controlada": {
+      "conclusion": "failure",
+      "createdAt": "2026-11-27T08:59:36Z",
+      "databaseId": 45969983018,
+      "displayTitle": "feat: previsão de conclusão das metas no ritmo dos últimos 3 meses",
+      "event": "push",
+      "headBranch": "feature/previsao-das-metas",
+      "headSha": "f8f68884ffcaa89f87425757be0483a39f36cf24",
+      "status": "completed",
+      "updatedAt": "2026-11-27T09:00:47Z",
+      "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45969983018",
+      "workflowName": "CI",
+      "jobs": [
+        {
+          "nome": "Verificações de segurança",
+          "conclusao": "success",
+          "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45969983018/job/140407780977",
+          "passos": [
+            {
+              "nome": "Set up job",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Obter o código com todo o histórico",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Preparar o PHP 8.3",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Dependências com vulnerabilidades conhecidas (composer audit)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Senhas e chaves esquecidas no código (Gitleaks)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Segurança dos workflows do GitHub Actions (zizmor)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Boas práticas do Dockerfile (hadolint)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Obter o código com todo o histórico",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Complete job",
+              "conclusao": "success"
+            }
+          ]
+        },
+        {
+          "nome": "Validação e testes",
+          "conclusao": "failure",
+          "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45969983018/job/140407781517",
+          "passos": [
+            {
+              "nome": "Set up job",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Initialize containers",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Obter o código",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Preparar o PHP 8.3",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Validar o composer.json",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Localizar o cache do Composer",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Reaproveitar downloads do Composer",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Instalar as dependências",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Verificar a sintaxe de todos os arquivos PHP",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Análise estática do PHP (PHPStan, nível 6)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Preparar o Node.js",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Testes do JavaScript",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Testes do PHP (PHPUnit, unitários e de integração com MySQL)",
+              "conclusao": "failure"
+            },
+            {
+              "nome": "Publicar o resultado dos testes",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Guardar os relatórios de teste",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Preparar o Node.js",
+              "conclusao": "skipped"
+            },
+            {
+              "nome": "Post Reaproveitar downloads do Composer",
+              "conclusao": "skipped"
+            },
+            {
+              "nome": "Post Obter o código",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Stop containers",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Complete job",
+              "conclusao": "success"
+            }
+          ]
+        },
+        {
+          "nome": "Resultado dos testes",
+          "conclusao": "failure",
+          "url": "https://github.com/DanMarangon/cofrelo-app/runs/140408270160",
+          "passos": []
+        },
+        {
+          "nome": "Imagem Docker",
+          "conclusao": "skipped",
+          "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45969983018/job/140408322346",
+          "passos": []
+        }
+      ]
+    },
+    "falha_controlada_todas": [
+      {
+        "conclusion": "failure",
+        "createdAt": "2026-11-27T08:59:40Z",
+        "databaseId": 45969991182,
+        "displayTitle": "Previsão de conclusão das metas",
+        "event": "pull_request",
+        "headBranch": "feature/previsao-das-metas",
+        "headSha": "f8f68884ffcaa89f87425757be0483a39f36cf24",
+        "status": "completed",
+        "updatedAt": "2026-11-27T09:00:43Z",
+        "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45969991182",
+        "workflowName": "CI"
+      },
+      {
+        "conclusion": "failure",
+        "createdAt": "2026-11-27T08:59:36Z",
+        "databaseId": 45969983018,
+        "displayTitle": "feat: previsão de conclusão das metas no ritmo dos últimos 3 meses",
+        "event": "push",
+        "headBranch": "feature/previsao-das-metas",
+        "headSha": "f8f68884ffcaa89f87425757be0483a39f36cf24",
+        "status": "completed",
+        "updatedAt": "2026-11-27T09:00:47Z",
+        "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45969983018",
+        "workflowName": "CI",
+        "jobs": [
+          {
+            "nome": "Verificações de segurança",
+            "conclusao": "success",
+            "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45969983018/job/140407780977",
+            "passos": [
+              {
+                "nome": "Set up job",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Obter o código com todo o histórico",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Preparar o PHP 8.3",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Dependências com vulnerabilidades conhecidas (composer audit)",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Senhas e chaves esquecidas no código (Gitleaks)",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Segurança dos workflows do GitHub Actions (zizmor)",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Boas práticas do Dockerfile (hadolint)",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Post Obter o código com todo o histórico",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Complete job",
+                "conclusao": "success"
+              }
+            ]
+          },
+          {
+            "nome": "Validação e testes",
+            "conclusao": "failure",
+            "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45969983018/job/140407781517",
+            "passos": [
+              {
+                "nome": "Set up job",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Initialize containers",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Obter o código",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Preparar o PHP 8.3",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Validar o composer.json",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Localizar o cache do Composer",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Reaproveitar downloads do Composer",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Instalar as dependências",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Verificar a sintaxe de todos os arquivos PHP",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Análise estática do PHP (PHPStan, nível 6)",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Preparar o Node.js",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Testes do JavaScript",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Testes do PHP (PHPUnit, unitários e de integração com MySQL)",
+                "conclusao": "failure"
+              },
+              {
+                "nome": "Publicar o resultado dos testes",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Guardar os relatórios de teste",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Post Preparar o Node.js",
+                "conclusao": "skipped"
+              },
+              {
+                "nome": "Post Reaproveitar downloads do Composer",
+                "conclusao": "skipped"
+              },
+              {
+                "nome": "Post Obter o código",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Stop containers",
+                "conclusao": "success"
+              },
+              {
+                "nome": "Complete job",
+                "conclusao": "success"
+              }
+            ]
+          },
+          {
+            "nome": "Resultado dos testes",
+            "conclusao": "failure",
+            "url": "https://github.com/DanMarangon/cofrelo-app/runs/140408270160",
+            "passos": []
+          },
+          {
+            "nome": "Imagem Docker",
+            "conclusao": "skipped",
+            "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45969983018/job/140408322346",
+            "passos": []
+          }
+        ]
+      }
+    ],
+    "correcao": {
+      "conclusion": "success",
+      "createdAt": "2026-11-27T09:02:21Z",
+      "databaseId": 45970373901,
+      "displayTitle": "Previsão de conclusão das metas",
+      "event": "pull_request",
+      "headBranch": "feature/previsao-das-metas",
+      "headSha": "1e1b57118d599eca0f4ba76110836addbda1b313",
+      "status": "completed",
+      "updatedAt": "2026-11-27T09:05:34Z",
+      "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45970373901",
+      "workflowName": "CI",
+      "jobs": [
+        {
+          "nome": "Verificações de segurança",
+          "conclusao": "success",
+          "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45970373901/job/140409048054",
+          "passos": [
+            {
+              "nome": "Set up job",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Obter o código com todo o histórico",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Preparar o PHP 8.3",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Dependências com vulnerabilidades conhecidas (composer audit)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Senhas e chaves esquecidas no código (Gitleaks)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Segurança dos workflows do GitHub Actions (zizmor)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Boas práticas do Dockerfile (hadolint)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Obter o código com todo o histórico",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Complete job",
+              "conclusao": "success"
+            }
+          ]
+        },
+        {
+          "nome": "Validação e testes",
+          "conclusao": "success",
+          "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45970373901/job/140409048418",
+          "passos": [
+            {
+              "nome": "Set up job",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Initialize containers",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Obter o código",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Preparar o PHP 8.3",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Validar o composer.json",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Localizar o cache do Composer",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Reaproveitar downloads do Composer",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Instalar as dependências",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Verificar a sintaxe de todos os arquivos PHP",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Análise estática do PHP (PHPStan, nível 6)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Preparar o Node.js",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Testes do JavaScript",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Testes do PHP (PHPUnit, unitários e de integração com MySQL)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Publicar o resultado dos testes",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Guardar os relatórios de teste",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Preparar o Node.js",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Reaproveitar downloads do Composer",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Obter o código",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Stop containers",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Complete job",
+              "conclusao": "success"
+            }
+          ]
+        },
+        {
+          "nome": "Imagem Docker",
+          "conclusao": "success",
+          "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45970373901/job/140409511979",
+          "passos": [
+            {
+              "nome": "Set up job",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Obter o código",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Definir as tags da imagem (branch e commit)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Preparar o Docker Buildx",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Construir a imagem de produção",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Testar a imagem com um MySQL de verdade",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Mostrar o log da aplicação se o teste falhar",
+              "conclusao": "skipped"
+            },
+            {
+              "nome": "Vulnerabilidades da imagem (Trivy, relatório completo)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Vulnerabilidades críticas com correção bloqueiam o pipeline (Trivy)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Publicar no GitHub Container Registry",
+              "conclusao": "skipped"
+            },
+            {
+              "nome": "Resumo da imagem",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Vulnerabilidades críticas com correção bloqueiam o pipeline (Trivy)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Vulnerabilidades da imagem (Trivy, relatório completo)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Construir a imagem de produção",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Preparar o Docker Buildx",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Obter o código",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Complete job",
+              "conclusao": "success"
+            }
+          ]
+        }
+      ]
+    },
+    "falha_trivy_tag": {
+      "conclusion": "failure",
+      "createdAt": "2026-11-27T00:12:59Z",
+      "databaseId": 45915430973,
+      "displayTitle": "Imagem Docker, Docker Compose e publicação no GHCR",
+      "event": "pull_request",
+      "headBranch": "feature/docker",
+      "headSha": "d7afe50a40a0e0eeea4017326d97e9511f5d9f50",
+      "status": "completed",
+      "updatedAt": "2026-11-27T00:13:58Z",
+      "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45915430973",
+      "workflowName": "CI"
+    },
+    "falha_gitleaks": {
+      "conclusion": "failure",
+      "createdAt": "2026-11-26T23:34:51Z",
+      "databaseId": 45911772755,
+      "displayTitle": "Núcleo do sistema e pipeline de CI",
+      "event": "pull_request",
+      "headBranch": "feature/nucleo",
+      "headSha": "2a2fdcfdcb86b06a768369cf702c80180ca4da1a",
+      "status": "completed",
+      "updatedAt": "2026-11-26T23:36:05Z",
+      "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45911772755",
+      "workflowName": "CI"
+    }
+  },
+  "releases_workflow": [
+    {
+      "conclusion": "success",
+      "createdAt": "2026-11-27T09:14:06Z",
+      "databaseId": 45971999544,
+      "displayTitle": "Versão 1.1.0",
+      "event": "push",
+      "headBranch": "v1.1.0",
+      "headSha": "f0f17e5c8da1468a1ab1f83e2f69c9c4a2d8f235",
+      "status": "completed",
+      "updatedAt": "2026-11-27T09:17:49Z",
+      "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45971999544",
+      "workflowName": "Release",
+      "jobs": [
+        {
+          "nome": "Publicar a versão",
+          "conclusao": "success",
+          "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45971999544/job/140414413650",
+          "passos": [
+            {
+              "nome": "Set up job",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Obter o código com o histórico (para as notas da versão)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Ler a versão da tag",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Definir as tags da imagem",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Preparar o Docker Buildx",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Entrar no GitHub Container Registry",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Construir e publicar a imagem versionada",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Empacotar a imagem para anexar à release",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Vulnerabilidades da imagem publicada (Trivy)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Escrever as notas da versão",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Criar a release no GitHub com a imagem anexada",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Vulnerabilidades da imagem publicada (Trivy)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Construir e publicar a imagem versionada",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Entrar no GitHub Container Registry",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Preparar o Docker Buildx",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Obter o código com o histórico (para as notas da versão)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Complete job",
+              "conclusao": "success"
+            }
+          ]
+        },
+        {
+          "nome": "Homologação da versão publicada",
+          "conclusao": "success",
+          "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45971999544/job/140415710839",
+          "passos": [
+            {
+              "nome": "Set up job",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Obter o código (Docker Compose e scripts)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Entrar no GitHub Container Registry",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Criar o .env da homologação com senhas aleatórias",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Implantar a imagem publicada (sem construir nada)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Testes de fumaça na versão implantada",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Mostrar os logs se algo falhar",
+              "conclusao": "skipped"
+            },
+            {
+              "nome": "Resumo",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Entrar no GitHub Container Registry",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Obter o código (Docker Compose e scripts)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Complete job",
+              "conclusao": "success"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-11-27T09:01:40Z",
+      "databaseId": 45970280748,
+      "displayTitle": "Versão 1.0.0",
+      "event": "push",
+      "headBranch": "v1.0.0",
+      "headSha": "85233456ba4ff5ba5dc518029ccf9a7df09fc38b",
+      "status": "completed",
+      "updatedAt": "2026-11-27T09:05:04Z",
+      "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45970280748",
+      "workflowName": "Release",
+      "jobs": [
+        {
+          "nome": "Publicar a versão",
+          "conclusao": "success",
+          "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45970280748/job/140408731941",
+          "passos": [
+            {
+              "nome": "Set up job",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Obter o código com o histórico (para as notas da versão)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Ler a versão da tag",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Definir as tags da imagem",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Preparar o Docker Buildx",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Entrar no GitHub Container Registry",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Construir e publicar a imagem versionada",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Empacotar a imagem para anexar à release",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Vulnerabilidades da imagem publicada (Trivy)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Escrever as notas da versão",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Criar a release no GitHub com a imagem anexada",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Vulnerabilidades da imagem publicada (Trivy)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Construir e publicar a imagem versionada",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Entrar no GitHub Container Registry",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Preparar o Docker Buildx",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Obter o código com o histórico (para as notas da versão)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Complete job",
+              "conclusao": "success"
+            }
+          ]
+        },
+        {
+          "nome": "Homologação da versão publicada",
+          "conclusao": "success",
+          "url": "https://github.com/DanMarangon/cofrelo-app/actions/runs/45970280748/job/140409889374",
+          "passos": [
+            {
+              "nome": "Set up job",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Obter o código (Docker Compose e scripts)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Entrar no GitHub Container Registry",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Criar o .env da homologação com senhas aleatórias",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Implantar a imagem publicada (sem construir nada)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Testes de fumaça na versão implantada",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Mostrar os logs se algo falhar",
+              "conclusao": "skipped"
+            },
+            {
+              "nome": "Resumo",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Entrar no GitHub Container Registry",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Post Obter o código (Docker Compose e scripts)",
+              "conclusao": "success"
+            },
+            {
+              "nome": "Complete job",
+              "conclusao": "success"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "releases": [
+    {
+      "assets": [
+        {
+          "nome": "cofrelo-imagem-1.1.0.tar.gz",
+          "tamanho": 176230949,
+          "url": "https://github.com/DanMarangon/cofrelo-app/releases/download/v1.1.0/cofrelo-imagem-1.1.0.tar.gz"
+        },
+        {
+          "nome": "docker-compose.yml",
+          "tamanho": 2940,
+          "url": "https://github.com/DanMarangon/cofrelo-app/releases/download/v1.1.0/docker-compose.yml"
+        },
+        {
+          "nome": "imagem-1.1.0.txt",
+          "tamanho": 350,
+          "url": "https://github.com/DanMarangon/cofrelo-app/releases/download/v1.1.0/imagem-1.1.0.txt"
+        },
+        {
+          "nome": "implantar.ps1",
+          "tamanho": 7226,
+          "url": "https://github.com/DanMarangon/cofrelo-app/releases/download/v1.1.0/implantar.ps1"
+        },
+        {
+          "nome": "implantar.sh",
+          "tamanho": 4219,
+          "url": "https://github.com/DanMarangon/cofrelo-app/releases/download/v1.1.0/implantar.sh"
+        },
+        {
+          "nome": "SHA256SUMS",
+          "tamanho": 421,
+          "url": "https://github.com/DanMarangon/cofrelo-app/releases/download/v1.1.0/SHA256SUMS"
+        }
+      ],
+      "body": "## Cofrelo 1.1.0\n\nImagem: `ghcr.io/danmarangon/cofrelo-app:1.1.0` (também `latest`)\n\nDigest: `sha256:e7826c81bb56f7289a89efbba6b5c5f79109af4d45926a986bd792de31251072`\n\n### Como implantar\n\n```powershell\n.\\scripts\\implantar.ps1 -Versao 1.1.0\n```\n\nO script troca a versão no Docker Compose, confere o /health e volta para a versão anterior se a nova não ficar saudável.\n\n### Mudanças desde v1.0.0\n\n- docs: correção do script de implantação no changelog da 1.1.0\n- fix: implantação segue para a release quando o GHCR recusa o download\n- docs: changelog da versão 1.1.0\n- fix: previsão da meta arredonda os meses para cima\n- feat: previsão de conclusão das metas no ritmo dos últimos 3 meses\n",
+      "name": "Cofrelo 1.1.0",
+      "publishedAt": "2026-11-27T09:16:42Z",
+      "tagName": "v1.1.0",
+      "url": "https://github.com/DanMarangon/cofrelo-app/releases/tag/v1.1.0",
+      "imagem_txt": "imagem=ghcr.io/danmarangon/cofrelo-app:1.1.0\ndigest=sha256:e7826c81bb56f7289a89efbba6b5c5f79109af4d45926a986bd792de31251072\nid=sha256:e7826c81bb56f7289a89efbba6b5c5f79109af4d45926a986bd792de31251072\ncommit=f0f17e5c8da1468a1ab1f83e2f69c9c4a2d8f235\nexecucao=https://github.com/DanMarangon/cofrelo-app/actions/runs/45971999544\ndata=2026-11-27T09:16:03Z\n"
+    },
+    {
+      "assets": [
+        {
+          "nome": "cofrelo-imagem-1.0.0.tar.gz",
+          "tamanho": 176229430,
+          "url": "https://github.com/DanMarangon/cofrelo-app/releases/download/v1.0.0/cofrelo-imagem-1.0.0.tar.gz"
+        },
+        {
+          "nome": "docker-compose.yml",
+          "tamanho": 2940,
+          "url": "https://github.com/DanMarangon/cofrelo-app/releases/download/v1.0.0/docker-compose.yml"
+        },
+        {
+          "nome": "imagem-1.0.0.txt",
+          "tamanho": 350,
+          "url": "https://github.com/DanMarangon/cofrelo-app/releases/download/v1.0.0/imagem-1.0.0.txt"
+        },
+        {
+          "nome": "implantar.ps1",
+          "tamanho": 6506,
+          "url": "https://github.com/DanMarangon/cofrelo-app/releases/download/v1.0.0/implantar.ps1"
+        },
+        {
+          "nome": "implantar.sh",
+          "tamanho": 4219,
+          "url": "https://github.com/DanMarangon/cofrelo-app/releases/download/v1.0.0/implantar.sh"
+        },
+        {
+          "nome": "SHA256SUMS",
+          "tamanho": 421,
+          "url": "https://github.com/DanMarangon/cofrelo-app/releases/download/v1.0.0/SHA256SUMS"
+        }
+      ],
+      "body": "## Cofrelo 1.0.0\n\nImagem: `ghcr.io/danmarangon/cofrelo-app:1.0.0` (também `latest`)\n\nDigest: `sha256:461b23e8062ca9d2130409780eb0a152c40dd34cd53deaf9422b51f991991eca`\n\n### Como implantar\n\n```powershell\n.\\scripts\\implantar.ps1 -Versao 1.0.0\n```\n\nO script troca a versão no Docker Compose, confere o /health e volta para a versão anterior se a nova não ficar saudável.\n\n### Primeira versão\n\n- docs: changelog da versão 1.0.0\n- docs: README com as melhorias da revisão\n- ci: PHPStan, zizmor e hadolint no pipeline, actions fixadas por SHA e permissões mínimas\n- fix: acessibilidade WCAG 2.2 AA em todas as páginas\n- fix: limita tentativas de login e protege a exportação CSV contra fórmulas\n- docs: README completo do projeto\n- feat: entrega continua com release versionada e implantacao com rollback\n- feat: observabilidade com Prometheus, alertas e painel do Grafana\n- ci: usa a tag v0.36.0 da action do Trivy\n- feat: imagem Docker, Docker Compose e publicacao no GHCR\n- feat: interface web baseada no prototipo do Figma\n- feat: utilitario de linha de comando para preparar e recriar o banco\n- feat: banco de dados MySQL, modelos e repositorios\n- feat: API REST com autenticacao, CRUD e paineis\n- ci: permite que o Gitleaks leia os commits do Pull Request\n- ci: pipeline de integracao continua no GitHub Actions\n- chore: trava as versoes das dependencias de desenvolvimento\n- feat: nucleo com configuracao, log e regras de negocio\n- chore: estrutura inicial do repositorio\n",
+      "name": "Cofrelo 1.0.0",
+      "publishedAt": "2026-11-27T09:04:01Z",
+      "tagName": "v1.0.0",
+      "url": "https://github.com/DanMarangon/cofrelo-app/releases/tag/v1.0.0",
+      "imagem_txt": "imagem=ghcr.io/danmarangon/cofrelo-app:1.0.0\ndigest=sha256:461b23e8062ca9d2130409780eb0a152c40dd34cd53deaf9422b51f991991eca\nid=sha256:461b23e8062ca9d2130409780eb0a152c40dd34cd53deaf9422b51f991991eca\ncommit=85233456ba4ff5ba5dc518029ccf9a7df09fc38b\nexecucao=https://github.com/DanMarangon/cofrelo-app/actions/runs/45970280748\ndata=2026-11-27T09:03:29Z\n"
+    }
+  ],
+  "imagem": {
+    "nome": "ghcr.io/danmarangon/cofrelo-app",
+    "versoes": []
+  }
+}

@@ -23,7 +23,10 @@ final class TransacaoRepositorioTest extends TesteComBanco
         $this->conta = $this->criarConta($this->usuario, 'Conta principal', 1000.00);
     }
 
-    /** @param array<string, mixed> $alteracoes */
+    /**
+     * @param array<string, mixed> $alteracoes
+     * @return array<string, mixed>
+     */
     private function despesa(array $alteracoes = []): array
     {
         return array_merge([

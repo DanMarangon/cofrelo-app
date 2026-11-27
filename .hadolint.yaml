@@ -1,0 +1,6 @@
+# Regras do hadolint (verificação do Dockerfile no CI) que não se aplicam a este projeto.
+ignored:
+  # DL3008 pede a versão exata de cada pacote do apt. No Debian isso quebra o build sempre que sai uma
+  # correção de segurança (a versão antiga some do repositório). Aqui quem fica fixada é a imagem base,
+  # pelo digest, e o Dependabot a atualiza.
+  - DL3008

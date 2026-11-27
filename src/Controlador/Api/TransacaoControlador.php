@@ -128,7 +128,10 @@ final class TransacaoControlador extends Controlador
         return Resposta::csv('transacoes-cofrelo-' . $this->hoje()->format('Y-m-d') . '.csv', Relatorio::montarCsv($linhas));
     }
 
-    /** @return array<string, mixed> */
+    /**
+     * @return array<string, mixed>
+     * @param array<string, mixed> $corpo
+     */
     private function validar(int $usuario, array $corpo): array
     {
         [$erros, $dados] = (new ValidadorTransacao())->validar(

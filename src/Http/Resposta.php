@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Cofrelo\Http;
 
+/**
+ * Resposta HTTP que o controlador devolve: status (200, 404...), cabeçalhos e corpo (JSON, HTML, CSV ou texto).
+ * Ela é imutável: comCabecalho() devolve uma cópia nova. Só enviar() manda para o navegador.
+ */
 final class Resposta
 {
     /** @param array<string, string> $cabecalhos */

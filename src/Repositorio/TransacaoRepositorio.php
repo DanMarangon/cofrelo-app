@@ -6,6 +6,10 @@ namespace Cofrelo\Repositorio;
 
 use Cofrelo\Modelo\Transacao;
 
+/**
+ * Consultas SQL das transações: listagem com filtros e paginação, totais do mês e os números dos gráficos.
+ * Toda consulta filtra pelo usuário logado, para ninguém ver os dados de outra pessoa (RN13).
+ */
 final class TransacaoRepositorio extends Repositorio
 {
     private const SELECAO = 'SELECT t.*, c.nome AS conta_nome, cd.nome AS conta_destino_nome,
@@ -56,8 +60,14 @@ final class TransacaoRepositorio extends Repositorio
     }
 
     /**
+     * Monta o WHERE da listagem a partir dos filtros da tela.
+     *
+     * Cada filtro preenchido acrescenta uma condição (como "t.data >= :inicio") e o valor dela vai separado em
+     * $parametros. O PDO junta os dois com segurança (consulta preparada), então o texto digitado pela pessoa
+     * nunca vira parte do SQL. No fim, as condições são ligadas com AND.
+     *
      * @param array<string, mixed> $filtro
-     * @return array{0: string, 1: array<string, mixed>}
+     * @return array{0: string, 1: array<string, mixed>} o WHERE e os valores dos parâmetros
      */
     private function condicoes(int $usuarioId, array $filtro): array
     {
@@ -94,18 +104,30 @@ final class TransacaoRepositorio extends Repositorio
         }
         $busca = trim((string) ($filtro['busca'] ?? ''));
         if ($busca !== '') {
-            $condicao = '(t.descricao LIKE :busca1 OR cat.nome LIKE :busca2 OR c.nome LIKE :busca3';
-            $termo = '%' . addcslashes($busca, '%_\\') . '%';
-            $parametros += ['busca1' => $termo, 'busca2' => $termo, 'busca3' => $termo];
-            // "286,40" ou "286.40" também procura pelo valor exato.
-            if (preg_match('/^\d+([.,]\d{1,2})?$/', $busca) === 1) {
-                $condicao .= ' OR t.valor = :valor_busca';
-                $parametros['valor_busca'] = (float) str_replace(',', '.', $busca);
-            }
-            $onde[] = $condicao . ')';
+            [$condicao, $valores] = self::condicaoDeBusca($busca);
+            $onde[] = $condicao;
+            $parametros += $valores;
         }
 
         return [implode(' AND ', $onde), $parametros];
+    }
+
+    /**
+     * A busca procura o texto na descrição, na categoria e na conta. Se o texto for um valor, como "286,40",
+     * também procura a transação com esse valor exato.
+     *
+     * @return array{0: string, 1: array<string, mixed>}
+     */
+    private static function condicaoDeBusca(string $busca): array
+    {
+        $termo = '%' . addcslashes($busca, '%_\\') . '%'; // % e _ digitados viram texto comum no LIKE
+        $condicao = '(t.descricao LIKE :busca1 OR cat.nome LIKE :busca2 OR c.nome LIKE :busca3';
+        $valores = ['busca1' => $termo, 'busca2' => $termo, 'busca3' => $termo];
+        if (preg_match('/^\d+([.,]\d{1,2})?$/', $busca) === 1) {
+            $condicao .= ' OR t.valor = :valor_busca';
+            $valores['valor_busca'] = (float) str_replace(',', '.', $busca);
+        }
+        return [$condicao . ')', $valores];
     }
 
     public function buscar(int $usuarioId, int $id): ?Transacao

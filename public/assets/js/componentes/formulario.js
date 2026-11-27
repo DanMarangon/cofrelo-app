@@ -1,3 +1,4 @@
+// Ajudantes dos formulários: máscara de dinheiro nos campos de valor e exibição dos erros que a API devolve por campo.
 import { mascararMoeda } from '../lib/formatos.js';
 
 /** Mostra a mensagem de erro embaixo de cada campo e coloca o foco no primeiro campo com problema. */

@@ -88,6 +88,7 @@ def main() -> None:
     rodar("gerar_documentacao.py")
     rodar("gerar_evidencias_devops.py")
     rodar("gerar_slides.py")
+    rodar("gerar_tecnologias.py")
     if "--zip" in argumentos:
         print(f"\nPacote de entrega de DW: {montar_zip()}")
     print(f"\nDocumentos em {c.ENTREGAS}")

@@ -7,6 +7,9 @@ namespace Cofrelo\Repositorio;
 use Cofrelo\Modelo\Meta;
 use DateTimeImmutable;
 
+/**
+ * Consultas SQL das metas e dos depósitos feitos nelas ("guardar dinheiro").
+ */
 final class MetaRepositorio extends Repositorio
 {
     /** @return Meta[] */

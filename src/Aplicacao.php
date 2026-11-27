@@ -40,35 +40,24 @@ final class Aplicacao
         $this->registrarRotasDasPaginas();
     }
 
-    /** Usado pelo public/index.php: lê a requisição real, responde e grava o log. */
+    /**
+     * Ponto de partida de toda requisição real (chamado pelo public/index.php):
+     * lê o que o navegador mandou, processa, mede o tempo, registra no log e envia a resposta.
+     */
     public function executar(): void
     {
         $inicio = hrtime(true);
         $requisicao = Requisicao::capturar();
         Url::definirBase($requisicao->base);
-
-        $id = $requisicao->cabecalho('x-request-id');
-        if ($id === null || preg_match('/^[A-Za-z0-9-]{6,64}$/', $id) !== 1) {
-            $id = bin2hex(random_bytes(8));
-        }
+        $id = self::idDaRequisicao($requisicao);
         Log::definirRequisicao($id);
 
         [$resposta, $rota] = $this->processar($requisicao);
         $resposta = $resposta->comCabecalho('X-Request-Id', $id);
 
-        $duracao = round((hrtime(true) - $inicio) / 1e6, 1);
-        Metricas::registrarRequisicao($requisicao->metodo, $rota, $resposta->status, $duracao);
-        if (!in_array($rota, ['/health', '/metrics'], true) || $resposta->status >= 400) {
-            Log::info('http.requisicao', [
-                'metodo' => $requisicao->metodo,
-                'caminho' => $requisicao->caminho,
-                'rota' => $rota,
-                'status' => $resposta->status,
-                'duracao_ms' => $duracao,
-                'usuario_id' => Sessao::usuarioId(),
-                'ip' => $requisicao->ip,
-            ]);
-        }
+        $duracaoMs = round((hrtime(true) - $inicio) / 1e6, 1);
+        Metricas::registrarRequisicao($requisicao->metodo, $rota, $resposta->status, $duracaoMs);
+        $this->registrarNoLog($requisicao, $rota, $resposta, $duracaoMs);
         $resposta->enviar();
     }
 
@@ -78,7 +67,16 @@ final class Aplicacao
         return $this->processar($requisicao)[0];
     }
 
-    /** @return array{0: Resposta, 1: string} resposta e padrão da rota (para as métricas) */
+    /**
+     * As etapas de uma requisição, em ordem:
+     *  1. achar a rota (qual controlador atende este endereço);
+     *  2. preparar o banco e a sessão;
+     *  3. conferir o login e o token CSRF;
+     *  4. chamar o controlador, que devolve a resposta.
+     * Qualquer erro no caminho vira uma resposta amigável (respostaDoErro).
+     *
+     * @return array{0: Resposta, 1: string} resposta e padrão da rota (para as métricas)
+     */
     private function processar(Requisicao $requisicao): array
     {
         $rota = 'nao-encontrada';
@@ -88,39 +86,98 @@ final class Aplicacao
             $opcoes = $encontrada['opcoes'];
             $requisicao = $requisicao->comParametros($encontrada['parametros']);
 
-            if (!($opcoes['sem_banco'] ?? false)) {
-                Migrador::prepararSeNecessario();
+            $this->prepararBancoESessao($opcoes);
+            $redirecionamento = $this->conferirAcesso($requisicao, $opcoes);
+            $resposta = $redirecionamento ?? ($encontrada['acao'])($requisicao);
+        } catch (\Throwable $erro) {
+            $resposta = $this->respostaDoErro($requisicao, $erro);
+        }
+        return [CabecalhosSeguranca::aplicar($resposta), $rota];
+    }
+
+    /** @param array<string, bool> $opcoes opções da rota (sem_banco, sem_sessao, publica, csrf) */
+    private function prepararBancoESessao(array $opcoes): void
+    {
+        if (!($opcoes['sem_banco'] ?? false)) {
+            Migrador::prepararSeNecessario(); // cria as tabelas na primeira execução
+        }
+        if (!($opcoes['sem_sessao'] ?? false)) {
+            Sessao::iniciar();
+        }
+    }
+
+    /**
+     * Páginas e API exigem login (menos as rotas públicas). Sem login, a API responde 401 e as páginas mandam
+     * para a tela de entrada. Toda alteração (POST, PUT, PATCH, DELETE) também precisa do token CSRF.
+     *
+     * @param array<string, bool> $opcoes
+     * @return Resposta|null o redirecionamento para o login, ou null quando o acesso está liberado
+     */
+    private function conferirAcesso(Requisicao $requisicao, array $opcoes): ?Resposta
+    {
+        $precisaDeLogin = !($opcoes['publica'] ?? false);
+        if ($precisaDeLogin && Sessao::usuarioId() === null) {
+            if ($requisicao->ehApi()) {
+                throw ErroHttp::naoAutenticado();
             }
-            if (!($opcoes['sem_sessao'] ?? false)) {
-                Sessao::iniciar();
-            }
-            if (!($opcoes['publica'] ?? false) && Sessao::usuarioId() === null) {
-                if ($requisicao->ehApi()) {
-                    throw ErroHttp::naoAutenticado();
-                }
-                return [CabecalhosSeguranca::aplicar(Resposta::redirecionar(Url::para('/login'))), $rota];
-            }
-            if (in_array($requisicao->metodo, ['POST', 'PUT', 'PATCH', 'DELETE'], true) && ($opcoes['csrf'] ?? true)) {
-                Sessao::exigirCsrf($requisicao);
-            }
-            $resposta = ($encontrada['acao'])($requisicao);
-        } catch (ErroHttp $erro) {
+            return Resposta::redirecionar(Url::para('/login'));
+        }
+        $alteraDados = in_array($requisicao->metodo, ['POST', 'PUT', 'PATCH', 'DELETE'], true);
+        if ($alteraDados && ($opcoes['csrf'] ?? true)) {
+            Sessao::exigirCsrf($requisicao);
+        }
+        return null;
+    }
+
+    /**
+     * Três tipos de erro:
+     *  - ErroHttp: erro esperado, com a mensagem pronta para o usuário (404, 422, 429...);
+     *  - PDOException: o banco não respondeu (503);
+     *  - qualquer outro: falha inesperada (500), registrada no log com os detalhes.
+     */
+    private function respostaDoErro(Requisicao $requisicao, \Throwable $erro): Resposta
+    {
+        if ($erro instanceof ErroHttp) {
             $resposta = $this->respostaDeErro($requisicao, $erro->status, $erro->getMessage(), $erro->campos);
             foreach ($erro->cabecalhos as $nome => $valor) {
                 $resposta = $resposta->comCabecalho($nome, $valor);
             }
-        } catch (\PDOException $erro) {
-            Log::erro('banco.erro', ['mensagem' => $erro->getMessage(), 'codigo' => $erro->getCode()]);
-            $resposta = $this->respostaDeErro($requisicao, 503, 'O banco de dados não respondeu. Tente de novo em instantes.');
-        } catch (\Throwable $erro) {
-            Log::erro('aplicacao.erro', [
-                'tipo' => $erro::class,
-                'mensagem' => $erro->getMessage(),
-                'arquivo' => $erro->getFile() . ':' . $erro->getLine(),
-            ]);
-            $resposta = $this->respostaDeErro($requisicao, 500, 'Algo deu errado do nosso lado. O erro foi registrado no log.');
+            return $resposta;
         }
-        return [CabecalhosSeguranca::aplicar($resposta), $rota];
+        if ($erro instanceof \PDOException) {
+            Log::erro('banco.erro', ['mensagem' => $erro->getMessage(), 'codigo' => $erro->getCode()]);
+            return $this->respostaDeErro($requisicao, 503, 'O banco de dados não respondeu. Tente de novo em instantes.');
+        }
+        Log::erro('aplicacao.erro', [
+            'tipo' => $erro::class,
+            'mensagem' => $erro->getMessage(),
+            'arquivo' => $erro->getFile() . ':' . $erro->getLine(),
+        ]);
+        return $this->respostaDeErro($requisicao, 500, 'Algo deu errado do nosso lado. O erro foi registrado no log.');
+    }
+
+    /** Usa o id que veio do cliente (se for válido) ou cria um novo; ele aparece em todas as linhas de log. */
+    private static function idDaRequisicao(Requisicao $requisicao): string
+    {
+        $id = $requisicao->cabecalho('x-request-id');
+        return ($id !== null && preg_match('/^[A-Za-z0-9-]{6,64}$/', $id) === 1) ? $id : bin2hex(random_bytes(8));
+    }
+
+    /** O /health e o /metrics são chamados a toda hora; só entram no log quando dão erro. */
+    private function registrarNoLog(Requisicao $requisicao, string $rota, Resposta $resposta, float $duracaoMs): void
+    {
+        if (in_array($rota, ['/health', '/metrics'], true) && $resposta->status < 400) {
+            return;
+        }
+        Log::info('http.requisicao', [
+            'metodo' => $requisicao->metodo,
+            'caminho' => $requisicao->caminho,
+            'rota' => $rota,
+            'status' => $resposta->status,
+            'duracao_ms' => $duracaoMs,
+            'usuario_id' => Sessao::usuarioId(),
+            'ip' => $requisicao->ip,
+        ]);
     }
 
     /**

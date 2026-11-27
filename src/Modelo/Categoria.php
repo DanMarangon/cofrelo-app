@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Cofrelo\Modelo;
 
+/**
+ * Categoria de transação (Moradia, Alimentação, Salário...), sempre de receita ou de despesa, com cor e ícone.
+ */
 final class Categoria
 {
     public function __construct(

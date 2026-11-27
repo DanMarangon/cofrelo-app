@@ -10,6 +10,10 @@ Cada versão tem uma tag `vX.Y.Z` na `main`, uma release no GitHub e a imagem `g
 
 - Previsão de conclusão de cada meta no ritmo dos últimos 3 meses (RN14): o cartão da meta diz em quantos meses ela fica pronta e em que mês, e a API devolve `ritmo_mensal`, `previsao_meses` e `previsao_rotulo` em `/api/metas`.
 
+### Corrigido
+
+- O script de implantação no Windows (`implantar.ps1`) agora segue para a imagem anexada à release quando o GHCR recusa o download, em vez de parar com erro.
+
 ## [1.0.0] - 2026-11-26
 
 Primeira versão entregue.

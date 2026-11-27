@@ -8,6 +8,7 @@ on:
     branches: [develop, main]
   workflow_dispatch:
 
+# Por padrão nenhum job pode escrever no repositório; cada job pede só o que usa.
 permissions:
   contents: read
 
@@ -20,6 +21,7 @@ jobs:
   validacao:
     name: Validação e testes
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
       checks: write
@@ -38,10 +40,12 @@ jobs:
           --health-retries=30
     steps:
       - name: Obter o código
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Preparar o PHP 8.3
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: "8.3"
           extensions: pdo_mysql, mbstring
@@ -56,7 +60,7 @@ jobs:
         run: echo "pasta=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
 
       - name: Reaproveitar downloads do Composer
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ${{ steps.cache-composer.outputs.pasta }}
           key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
@@ -72,8 +76,11 @@ jobs:
           done < <(find . -path ./vendor -prune -o -name '*.php' -print0)
           exit $erros
 
+      - name: Análise estática do PHP (PHPStan, nível 6)
+        run: vendor/bin/phpstan analyse --no-progress --error-format=github
+
       - name: Preparar o Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: "22"
 
@@ -96,7 +103,7 @@ jobs:
 
       - name: Publicar o resultado dos testes
         if: always()
-        uses: mikepenz/action-junit-report@v5
+        uses: mikepenz/action-junit-report@3585e9575db828022551b4231f165eb59a0e74e3 # v5.6.2
         with:
           report_paths: build/*-junit.xml
           check_name: Resultado dos testes
@@ -105,7 +112,7 @@ jobs:
 
       - name: Guardar os relatórios de teste
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: relatorios-de-teste
           path: build/
@@ -114,18 +121,20 @@ jobs:
   seguranca:
     name: Verificações de segurança
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: read
       # O Gitleaks consulta a lista de commits do Pull Request para saber o que analisar.
       pull-requests: read
     steps:
       - name: Obter o código com todo o histórico
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Preparar o PHP 8.3
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: "8.3"
           coverage: none
@@ -135,14 +144,21 @@ jobs:
         run: composer audit --locked
 
       - name: Senhas e chaves esquecidas no código (Gitleaks)
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Segurança dos workflows do GitHub Actions (zizmor)
+        run: pipx run zizmor==1.16.0 --offline --format github .github/workflows
+
+      - name: Boas práticas do Dockerfile (hadolint)
+        run: docker run --rm -v "$PWD:/repo" -w /repo hadolint/hadolint:v2.12.0@sha256:30a8fd2e785ab6176eed53f74769e04f125afb2f74a6c52aef7d463583b6d45e hadolint Dockerfile
 
   imagem:
     name: Imagem Docker
     needs: [validacao, seguranca]
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: read
       packages: write
@@ -150,11 +166,13 @@ jobs:
       IMAGEM: ghcr.io/danmarangon/cofrelo-app
     steps:
       - name: Obter o código
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Definir as tags da imagem (branch e commit)
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
         with:
           images: ${{ env.IMAGEM }}
           tags: |
@@ -163,10 +181,10 @@ jobs:
             type=sha,format=short,prefix=sha-
 
       - name: Preparar o Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
 
       - name: Construir a imagem de produção
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           context: .
           target: producao
@@ -186,9 +204,9 @@ jobs:
         run: |
           docker network create cofrelo
           docker run -d --name banco --network cofrelo -e MYSQL_ROOT_PASSWORD="$SENHA" -e MYSQL_DATABASE=cofrelo mysql:8.4
-          for i in $(seq 1 40); do docker exec banco mysqladmin ping -h 127.0.0.1 -uroot -p"$SENHA" --silent 2>/dev/null && break; sleep 3; done
+          for _ in $(seq 1 40); do docker exec banco mysqladmin ping -h 127.0.0.1 -uroot -p"$SENHA" --silent 2>/dev/null && break; sleep 3; done
           docker run -d --name app --network cofrelo -p 8080:8080 -e DB_HOST=banco -e DB_USER=root -e DB_PASS="$SENHA" "$IMAGEM_TESTE"
-          for i in $(seq 1 30); do curl -fsS http://localhost:8080/health > /dev/null 2>&1 && break; sleep 2; done
+          for _ in $(seq 1 30); do curl -fsS http://localhost:8080/health > /dev/null 2>&1 && break; sleep 2; done
           curl -fsS http://localhost:8080/health | tee saude.json
           echo
           grep -q '"status":"ok"' saude.json
@@ -202,7 +220,7 @@ jobs:
         run: docker logs app || true
 
       - name: Vulnerabilidades da imagem (Trivy, relatório completo)
-        uses: aquasecurity/trivy-action@v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
           format: table
@@ -211,7 +229,7 @@ jobs:
           exit-code: "0"
 
       - name: Vulnerabilidades críticas com correção bloqueiam o pipeline (Trivy)
-        uses: aquasecurity/trivy-action@v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
           format: table
@@ -222,8 +240,10 @@ jobs:
 
       - name: Publicar no GitHub Container Registry
         if: github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          echo "$TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
           docker push --all-tags "$IMAGEM"
 
       - name: Resumo da imagem
@@ -239,7 +259,7 @@ jobs:
             echo "$TAGS"
             echo '```'
             echo "ID da imagem: \`$(docker image inspect --format '{{.Id}}' "$(echo "$TAGS" | head -n1)" 2>/dev/null)\`"
-            if [ "${{ github.event_name }}" = "push" ] && { [ "${{ github.ref }}" = "refs/heads/develop" ] || [ "${{ github.ref }}" = "refs/heads/main" ]; }; then
+            if [ "$GITHUB_EVENT_NAME" = "push" ] && { [ "$GITHUB_REF" = "refs/heads/develop" ] || [ "$GITHUB_REF" = "refs/heads/main" ]; }; then
               echo ""
               echo "Publicada em https://github.com/DanMarangon/cofrelo-app/pkgs/container/cofrelo-app"
             fi

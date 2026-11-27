@@ -40,7 +40,7 @@ final class ResumoFinanceiro
         $saldoAnterior = $this->contas->patrimonio($usuarioId, $fimAnterior->format('Y-m-d'));
 
         $usuario = $this->usuarios->buscar($usuarioId);
-        $orcamento = $usuario?->orcamentoMensal ?? 0.0;
+        $orcamento = $usuario->orcamentoMensal ?? 0.0;
 
         $ate = min($hoje, $fim)->format('Y-m-d');
 
@@ -131,7 +131,11 @@ final class ResumoFinanceiro
         return $resultado;
     }
 
-    /** A meta em andamento mais adiantada; se nenhuma começou, a primeira ativa. @return array<string, mixed>|null */
+    /**
+     * A meta em andamento mais adiantada; se nenhuma começou, a primeira ativa.
+     *
+     * @return array<string, mixed>|null
+     */
     private function metaDestaque(int $usuarioId, DateTimeImmutable $hoje): ?array
     {
         $ativas = array_filter(
